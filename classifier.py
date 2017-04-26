@@ -278,3 +278,73 @@ def TreeKFoldReport(df, report_folder, clf):
     plt.show()
 
 
+def getClf(individual):
+    clf = tree.DecisionTreeClassifier(criterion="gini",
+                                      splitter="best",
+                                      max_features=None,
+                                      max_depth=8,
+                                      min_samples_split=4,
+                                      min_samples_leaf=10,
+                                      min_weight_fraction_leaf=0,
+                                      max_leaf_nodes=None,
+                                      random_state=None,
+                                      min_impurity_split=individual[0],
+                                      presort=False)
+    return clf
+
+def KFoldAccuracy(df,clf):
+
+    # List with the different labels
+    class_list = list(df["class"].drop_duplicates())
+    # List with all the labels
+    labels = list(df["class"].values)
+    # List with the features
+    features = []
+    for j in range(df.shape[0]):
+        item = df.ix[j]
+        features.append([item[i] for i in range(len(item) - 1)])
+
+    # Feature names list
+    features_names_full = list(df.columns.values[:-1])
+
+    # Create object to split the dataset (in 5 at random but preserving percentage of each class)
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=1)
+    # Split the dataset. The skf saves splits index
+    skf.get_n_splits(features, labels)
+
+    # Transform lists to np.arrays
+    features = np.array(features)
+    labels = np.array(labels)
+
+    # Total predicted label kfold (Used for final confusion matrix)
+    labels_kfold_predicted = []
+    # Total labels kfold    (Used for final confusion matrix)
+    labels_kfold = []
+    # Accuracies for each kfold (Used for final accuracy and std)
+    accuracies_kfold = []
+
+    # Counter for the full report
+    kcounter = 0
+
+    # Iterate over the KFolds and do stuff
+    for train_index, test_index in skf.split(features, labels):
+        # Splits
+        features_train, features_test = features[train_index], features[test_index]
+        labels_train, labels_test = labels[train_index], labels[test_index]
+
+        # Train the classifier
+        clf.fit(features_train, labels_train)
+        accuracies_kfold.append(clf.score(features_test, labels_test))
+
+        # Labels predicted for test split
+        labels_pred_test = clf.predict(features_test)
+
+        labels_kfold.extend(labels_test)
+        labels_kfold_predicted.extend(labels_pred_test)
+
+        kcounter += 1
+
+    meanAccuracy = np.mean(accuracies_kfold)
+    std = np.std(accuracies_kfold)
+
+    return meanAccuracy, std
