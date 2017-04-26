@@ -114,6 +114,26 @@ class ConfusionMatrixMetrics(object):
             r+= "\tPrecision: " + str(self.precision(i)) + " Recall: " + str(self.recall(i)) + " Accuracy: " + str(self.accuracy(i)) +"\n"
         return r
 
+    # Transforms the current cmm into a graph
+    def cmmToGraph(self):
+        import networkx as nx
+        G = nx.DiGraph()
+
+        # Add node for each class_name with weight equal to
+        # his accuracy rate
+        for i in range(len(self.class_names)):
+            G.add_node(self.class_names[i], weight=self.cm[i][i])
+
+        # Add directed edge between each class when it is a confusion
+        # in the matrix
+        for i in range(len(self.class_names)):
+            for j in range(len(self.class_names)):
+                if(i!=j and self.cm[i][j]>0):
+                    G.add_edge(self.class_names[i], self.class_names[j],
+                               weight=self.cm[i][j])
+
+        return G
+
 
 def beatsdataset():
     # Base folder with songs in mp3
