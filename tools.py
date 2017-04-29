@@ -1,5 +1,7 @@
 import os
 import numpy as np
+import networkx as nx
+
 
 # Given the route of the genres directory, transforms every song into 
 # .wav format and deletes the old one.
@@ -116,7 +118,6 @@ class ConfusionMatrixUtils(object):
 
     # Transforms the current cmm into a graph
     def cmmToGraph(self):
-        import networkx as nx
         G = nx.DiGraph()
 
         # Add node for each class_name with weight equal to
