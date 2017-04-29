@@ -3,7 +3,7 @@ from sklearn.model_selection import StratifiedKFold
 # DecissionTreeClassifier algorythm
 from sklearn import tree
 from sklearn.metrics import confusion_matrix
-from tools import ConfusionMatrixMetrics
+from tools import ConfusionMatrixUtils
 import pydotplus
 import numpy as np
 import matplotlib.pyplot as plt
@@ -126,7 +126,7 @@ def KFoldCrossValidation(df, report_folder, clf):
     plot_confusion_matrix(cm_kfold_total, class_list, False, "Full test Confusion")
     plt.savefig(report_folder + "cmkfolds.pdf")
 
-    cmm = ConfusionMatrixMetrics(cm_kfold_total, class_list)
+    cmm = ConfusionMatrixUtils(cm_kfold_total, class_list)
     report.write(cmm.report() + "\n\n")
 
     clf.fit(features, labels)
@@ -192,7 +192,7 @@ def TreeKFoldReport(df, report_folder, clf):
         cm_test = confusion_matrix(labels_test, labels_pred_test)
         cm_train = confusion_matrix(labels_train, labels_pred_train)
 
-        cmm = ConfusionMatrixMetrics(cm_test, class_list)
+        cmm = ConfusionMatrixUtils(cm_test, class_list)
         report.write("\t" + cmm.report() + "\n\n")
 
         """
@@ -234,7 +234,7 @@ def TreeKFoldReport(df, report_folder, clf):
     plot_confusion_matrix(cm_kfold_total, class_list, False, "Full test Confusion")
     plt.savefig(report_folder + "cmkfolds.pdf")
 
-    cmm = ConfusionMatrixMetrics(cm_kfold_total, class_list)
+    cmm = ConfusionMatrixUtils(cm_kfold_total, class_list)
     report.write(cmm.report() + "\n\n")
 
     clf.fit(features, labels)

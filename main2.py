@@ -254,7 +254,7 @@ from sklearn.model_selection import StratifiedKFold
 # DecissionTreeClassifier algorythm
 from sklearn import tree
 from sklearn.metrics import confusion_matrix
-from tools import ConfusionMatrixMetrics
+from tools import ConfusionMatrixUtils
 import pydotplus
 
 # features_names_full = list(df.columns.values[[34,68]])
@@ -335,7 +335,7 @@ for train_index, test_index in skf.split(features, labels):
     cm_test = confusion_matrix(labels_test, labels_pred_test)
     cm_train = confusion_matrix(labels_train, labels_pred_train)
 
-    cmm = ConfusionMatrixMetrics(cm_test, genre_list)
+    cmm = ConfusionMatrixUtils(cm_test, genre_list)
     report.write("\t"+cmm.report()+"\n\n")
 
     """
@@ -390,7 +390,7 @@ plt.figure()
 plot_confusion_matrix(cm_kfold_total, genre_list, False, "Full test Confusion")
 plt.savefig(rfile+"cmkfolds.pdf")
 
-cmm = ConfusionMatrixMetrics(cm_kfold_total, genre_list)
+cmm = ConfusionMatrixUtils(cm_kfold_total, genre_list)
 report.write(cmm.report() + "\n\n")
 
 clf = tree.DecisionTreeClassifier(criterion = "gini", min_samples_split=10)
