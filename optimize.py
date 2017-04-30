@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from classifier import getClf, KFoldAccuracy
+from tpot import TPOTClassifier
 
 
 def autoTPOT(df):
@@ -18,7 +19,6 @@ def autoTPOT(df):
 
     #features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.2)
 
-    from tpot import TPOTClassifier
     pipeline_optimizer = TPOTClassifier(generations=20, population_size=100, verbosity=3)
 
     pipeline_optimizer.fit(features, labels)
