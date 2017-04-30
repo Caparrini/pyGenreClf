@@ -19,11 +19,11 @@ def autoTPOT(df):
     #features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.2)
 
     from tpot import TPOTClassifier
-    pipeline_optimizer = TPOTClassifier(generations=5, population_size=3, verbosity=3)
+    pipeline_optimizer = TPOTClassifier(generations=20, population_size=100, verbosity=3)
 
     pipeline_optimizer.fit(features, labels)
     #print(pipeline_optimizer.score(features_test, labels_test))
-    pipeline_optimizer.export('tpot_exported_pipeline.py')
+    pipeline_optimizer.export('tpot_final_pipe.py')
 
 
 
@@ -57,5 +57,3 @@ def optimizeClf():
     pop = toolbox.population(n=10)
     fpop, logbook = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=2)
     return fpop, logbook
-
-optimizeClf()
