@@ -55,7 +55,7 @@ class Optimizer():
         toolbox.register("mate", tools.cxTwoPoint)
         toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
         toolbox.register("select", tools.selTournament, tournsize=2)
-        toolbox.register("evaluate", evaluateClf)
+        toolbox.register("evaluate", self.evaluateClf)
 
         pop = toolbox.population(n=10)
         fpop, logbook = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=2)
