@@ -27,33 +27,36 @@ def autoTPOT(df):
 
 
 
-df = pd.DataFrame.from_csv("beatsdataset.csv")
-def evaluateClf(individual):
-    mean, std = KFoldAccuracy(df,getClf(individual))
-    print("min_samples_split= "+str(individual[0])+"  ----> Accuracy: " + str(mean) + " +- " + str(std) + "\n")
-    return mean, std
+class Optimizer():
+    def __init__(self, df):
+        self.df = df
 
-#TODO
-def optimizeClf():
-    #Using deap, custom for decision tree
-    from deap import base, creator, tools, algorithms
-    from random import random, randint
-    creator.create("FitnessMax", base.Fitness, weights=(1.0,-1.0))
-    creator.create("Individual", list, fitness=creator.FitnessMax)
+    def evaluateClf(self, individual):
+        mean, std = KFoldAccuracy(self.df, getClf(individual))
+        print("min_samples_split= "+str(individual[0])+"  ----> Accuracy: " + str(mean) + " +- " + str(std) + "\n")
+        return mean, std
 
-    IND_SIZE=2
+    #TODO Unfinished
+    def optimizeClf(self):
+        #Using deap, custom for decision tree
+        from deap import base, creator, tools, algorithms
+        from random import random, randint
+        creator.create("FitnessMax", base.Fitness, weights=(1.0,-1.0))
+        creator.create("Individual", list, fitness=creator.FitnessMax)
 
-    toolbox = base.Toolbox()
-    toolbox.register("min_sample_split", randint, 2, 100)
-    toolbox.register("individual", tools.initRepeat, creator.Individual,
-                     toolbox.min_sample_split, n=IND_SIZE)
-    toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+        IND_SIZE=2
 
-    toolbox.register("mate", tools.cxTwoPoint)
-    toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
-    toolbox.register("select", tools.selTournament, tournsize=2)
-    toolbox.register("evaluate", evaluateClf)
+        toolbox = base.Toolbox()
+        toolbox.register("min_sample_split", randint, 2, 100)
+        toolbox.register("individual", tools.initRepeat, creator.Individual,
+                         toolbox.min_sample_split, n=IND_SIZE)
+        toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-    pop = toolbox.population(n=10)
-    fpop, logbook = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=2)
-    return fpop, logbook
+        toolbox.register("mate", tools.cxTwoPoint)
+        toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
+        toolbox.register("select", tools.selTournament, tournsize=2)
+        toolbox.register("evaluate", evaluateClf)
+
+        pop = toolbox.population(n=10)
+        fpop, logbook = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=2)
+        return fpop, logbook
