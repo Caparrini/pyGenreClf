@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import itertools
 
-
+#TODO Move to ConfusionMatrixUtils
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
@@ -46,7 +46,7 @@ def plot_confusion_matrix(cm, classes,
 
 
 
-
+#TODO Is it necessary?
 def KFoldCrossValidation(df, report_folder, clf):
 
     # List with the different labels
@@ -133,17 +133,10 @@ def KFoldCrossValidation(df, report_folder, clf):
 
     return clf
 
+#TODO Fix and clean
 def TreeKFoldReport(df, report_folder, clf):
 
-    # List with the different labels
-    class_list = list(df["class"].drop_duplicates())
-    # List with all the labels
-    labels = list(df["class"].values)
-    # List with the features
-    features = []
-    for j in range(df.shape[0]):
-        item = df.ix[j]
-        features.append([item[i] for i in range(len(item) - 1)])
+    class_list, features, labels = unpackDF(df)
 
     # Feature names list
     features_names_full = list(df.columns.values[:-1])
@@ -259,6 +252,7 @@ def TreeKFoldReport(df, report_folder, clf):
     for f in range(X.shape[1]):
         print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
 
+    """
     # Plot the feature importances of the forest
     plt.figure()
     # Get current size
@@ -276,8 +270,23 @@ def TreeKFoldReport(df, report_folder, clf):
     plt.xticks(range(X.shape[1]), indices)
     plt.xlim([-1, X.shape[1]])
     plt.show()
+    """
 
 
+def unpackDF(df):
+    # List with the different labels
+    class_list = list(df["class"].drop_duplicates())
+    # List with all the labels (X)
+    labels = list(df["class"].values)
+    # List with the features (y)
+    features = []
+    for j in range(df.shape[0]):
+        item = df.ix[j]
+        features.append([item[i] for i in range(len(item) - 1)])
+
+    return class_list, features, labels
+
+#TODO
 def getClf(individual):
     clf = tree.DecisionTreeClassifier(criterion="gini",
                                       splitter="best",
@@ -292,20 +301,9 @@ def getClf(individual):
                                       presort=False)
     return clf
 
-def KFoldAccuracy(df,clf):
+def KFoldAccuracy(df, clf):
 
-    # List with the different labels
-    class_list = list(df["class"].drop_duplicates())
-    # List with all the labels
-    labels = list(df["class"].values)
-    # List with the features
-    features = []
-    for j in range(df.shape[0]):
-        item = df.ix[j]
-        features.append([item[i] for i in range(len(item) - 1)])
-
-    # Feature names list
-    features_names_full = list(df.columns.values[:-1])
+    _, features, labels = unpackDF(df)
 
     # Create object to split the dataset (in 5 at random but preserving percentage of each class)
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=1)
