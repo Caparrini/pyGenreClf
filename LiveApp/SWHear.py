@@ -45,6 +45,7 @@ class SWHear():
         self.chunksRead = 0
         self.device = device
         self.rate = rate
+        self.song = []
 
     ### SYSTEM TESTS
 
@@ -118,6 +119,7 @@ class SWHear():
     def stream_readchunk(self):
         """reads some audio and re-launches itself"""
         try:
+            self.song.append(self.data)
             self.data = np.fromstring(self.stream.read(self.chunk), dtype=np.int16)
             self.fftx, self.fft = getFFT(self.data, self.rate)
 

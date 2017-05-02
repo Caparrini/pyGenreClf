@@ -14,6 +14,8 @@ import numpy as np
 import math
 from SWHear import SWHear, getFFT
 import time
+from features import extractFeatures
+from classifier import GenreClassifier
 
 mc = SWHear(device=2,rate=44100,updatesPerSecond=10)
 mc.stream_start()
