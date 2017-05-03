@@ -91,7 +91,8 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
 
-def pyAudioFeatures70(dataset_csv="beatsdataset.csv", dataset_folder="/Users/Capa/Datasets/beatsdataset/"):
+def pyAudioFeatures70(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/Capa/Datasets/beatsdataset/",
+                      mtWin=1, mtStep=1, stWin=0.05, stStep=0.05):
 
     genre_list = [x for x in os.walk(dataset_folder)][0][1]
 
@@ -105,7 +106,7 @@ def pyAudioFeatures70(dataset_csv="beatsdataset.csv", dataset_folder="/Users/Cap
             return
 
     dirs = [dataset_folder + f + "/" for f in genre_list]
-    [featuresTotal, labelsTotal, _] = audioFeatureExtraction.dirsWavFeatureExtraction(dirs, 1, 1, 0.05, 0.05, True)
+    [featuresTotal, labelsTotal, _] = audioFeatureExtraction.dirsWavFeatureExtraction(dirs, mtWin, mtStep, stWin, stStep, True)
 
     features = []
     labels = []
@@ -143,7 +144,8 @@ def pyAudioFeatures70(dataset_csv="beatsdataset.csv", dataset_folder="/Users/Cap
 
     return df
 
-def pyAudioFeatures(dataset_csv="beatsdataset.csv", dataset_folder="/Users/Capa/Datasets/beatsdataset/"):
+def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/Capa/Datasets/beatsdataset/",
+                    mtWin=1, mtStep=1, stWin=0.05, stStep=0.05):
 
     genre_list = [x for x in os.walk(dataset_folder)][0][1]
 
@@ -158,7 +160,7 @@ def pyAudioFeatures(dataset_csv="beatsdataset.csv", dataset_folder="/Users/Capa/
             return
 
     dirs = [dataset_folder + f + "/" for f in genre_list]
-    [featuresTotal, labelsTotal, _] = audioFeatureExtraction.dirsWavFeatureExtraction(dirs, 1, 1, 0.05, 0.025, True)
+    [featuresTotal, labelsTotal, _] = audioFeatureExtraction.dirsWavFeatureExtraction(dirs, mtWin, mtStep, stWin, stStep, True)
 
     features = []
     labels = []

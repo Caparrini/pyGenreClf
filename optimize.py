@@ -4,7 +4,7 @@ from classifier import getClf, KFoldAccuracy
 from tpot import TPOTClassifier
 
 
-def autoTPOT(df):
+def autoTPOT(df, export='tpot_pipe.py'):
     #labels = list(df["class"].values)
     features = []
     for j in range(df.shape[0]):
@@ -19,11 +19,11 @@ def autoTPOT(df):
 
     #features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.2)
 
-    pipeline_optimizer = TPOTClassifier(generations=20, population_size=100, verbosity=3)
+    pipeline_optimizer = TPOTClassifier(generations=10, population_size=10, verbosity=3)
 
     pipeline_optimizer.fit(features, labels)
     #print(pipeline_optimizer.score(features_test, labels_test))
-    pipeline_optimizer.export('tpot_final_pipe.py')
+    pipeline_optimizer.export(export)
 
 
 

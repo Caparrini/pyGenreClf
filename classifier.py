@@ -2,7 +2,8 @@
 from sklearn.model_selection import StratifiedKFold
 # DecissionTreeClassifier algorythm
 from sklearn import tree
-from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.ensemble import ExtraTreesClassifier, GradientBoostingClassifier
+from xgboost import XGBClassifier
 from sklearn.metrics import confusion_matrix
 from tools import ConfusionMatrixUtils
 import pandas as pd
@@ -11,6 +12,53 @@ import numpy as np
 import matplotlib.pyplot as plt
 import itertools
 from features import extractFeatures
+
+# Returns the best classifiers for faster experiments
+def bestClfs():
+
+    #1 0.548 +-0.015 with beatsdataset.csv (windows and steps 1 1 0.05 0.05) SIN ESSENTIA BPM 0.47
+    #2 0.492 +- 0.015 with beatsdataset1-1-01-005.csv
+    #3 0.486 +- 0.015 with beatsdataset1-1-01-01.csv
+    #4 0.424 +- 0.023 with beatsdataset1-1-04-04.csv
+    #5 0.4383 +- 0.0103 with beatsdataset1-05-005-0025.csv
+    #6 0.463 +- 0.032 with beatsdataset138-stStep25.csv
+    #7 0.493 +- 0.011 with beatsdataset138-stStep50.csv  CON ESSENTIA BPM 0.56 +- 0.007
+    #10 0.694 +- 0.044 with gtzan.csv
+
+
+    ETC = ExtraTreesClassifier(bootstrap=True, criterion="gini",
+                               max_features=0.75, min_samples_leaf=2,
+                               min_samples_split=10, n_estimators=100)
+
+    # Best with GTZAN
+    #1 0.534 +- 0.01 with beatsdataset.csv
+    #2 0.46 +- 0.01 with beatsdataset1-1-01-005.csv
+    #3 0.48 +- 0.014 with beatsdataset1-1-01-01.csv
+    #4 0.422 +- 0.019 with beatsdataset1-1-04-04.csv
+    #5 0.4387 +- 0.0182 with beatsdataset1-05-005-0025.csv
+    #6 0.452 +- 0.0198 with beatsdataset138-stStep25.csv
+    #7 0.486 +- 0.024 with beatsdataset138-stStep50.csv
+    #10 0.731 +- 0.021 with gtzan.csv
+
+    GBC = GradientBoostingClassifier(learning_rate=0.1, max_depth=6,
+                                     max_features=0.5, min_samples_leaf=13,
+                                     min_samples_split=6, subsample=0.8)
+
+    #1 0.556 +-0.016 with beatsdataset.csv SIN ESSENTIA BPM 0.48
+    #2 0.477 +- 0.012 with beatsdataset1-1-01-005.csv
+    #3 0.477 +- 0.007 with beatsdataset1-1-01-01.csv
+    #4 0.451 +- 0.007 with beatsdataset1-1-04-04.csv
+    #5 0.443 +- 0.019 with beatsdataset1-05-005-0025.csv
+    #6 0.479 +- 0.011 with beatsdataset138-stStep25.csv
+    #7 0.5 +- 0.02 with beatsdataset138-stStep50.csv CON ESSENTIA BPM 0.557, 0.017
+    #10 0.722 +- 0.012 with gtzan.csv
+
+    XGB = XGBClassifier(learning_rate=0.1, max_depth=5,
+                        min_child_weight=6, nthread=4,
+                        subsample=0.55)
+
+    clfs = [ETC,GBC,XGB]
+    return clfs
 
 #TODO Move to ConfusionMatrixUtils
 def plot_confusion_matrix(cm, classes,
