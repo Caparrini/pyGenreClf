@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from classifier import getClf, KFoldAccuracy
 from tpot import TPOTClassifier
+from random import random, randint
 
 
 def autoTPOT(df, export='tpot_pipe.py'):
@@ -33,30 +34,54 @@ class Optimizer():
 
     def evaluateClf(self, individual):
         mean, std = KFoldAccuracy(self.df, getClf(individual))
-        print("min_samples_split= "+str(individual[0])+"  ----> Accuracy: " + str(mean) + " +- " + str(std) + "\n")
-        return mean, std
+        print("min_samples_split= "+str(individual[0])+"\n"+"min_samples_leaf= "+str(individual[1])+
+              "\n" + "max_features= " + str(individual[2])
+              +"  ----> Accuracy: " + str(mean) + " +- " + str(std) + "\n")
+        return mean,std
+
+    def initIndividual(self, pcls, maxints):
+        min_samples_split = randint(2,maxints[0])
+        min_samples_leaf = randint(1,maxints[1])
+        max_features = random()
+        ind = pcls([min_samples_split,min_samples_leaf, max_features])
+        return ind
 
     #TODO Unfinished
     def optimizeClf(self):
         #Using deap, custom for decision tree
         from deap import base, creator, tools, algorithms
-        from random import random, randint
         creator.create("FitnessMax", base.Fitness, weights=(1.0,-1.0))
         creator.create("Individual", list, fitness=creator.FitnessMax)
 
-        IND_SIZE=2
+        # min_samples_split
+        # min_samples_leaf
+        maxints=[100,100]
 
+        # Creation of individual and population
         toolbox = base.Toolbox()
-        toolbox.register("min_sample_split", randint, 2, 100)
-        toolbox.register("individual", tools.initRepeat, creator.Individual,
-                         toolbox.min_sample_split, n=IND_SIZE)
+        toolbox.register("individual", self.initIndividual, creator.Individual, maxints=maxints)
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
+        # Methods for genetic algorithm
         toolbox.register("mate", tools.cxTwoPoint)
-        toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
-        toolbox.register("select", tools.selTournament, tournsize=2)
+        toolbox.register("mutate", tools.mutPolynomialBounded, eta=0, low=(2,1,0), up=(maxints[0],maxints[1],1), indpb=0.2)
+        toolbox.register("select", tools.selTournament, tournsize=5)
         toolbox.register("evaluate", self.evaluateClf)
 
-        pop = toolbox.population(n=10)
-        fpop, logbook = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=2)
+        # Tools
+        pop = toolbox.population(n=50)
+        hof = tools.HallOfFame(1)
+
+        # History
+        hist = tools.History()
+        toolbox.decorate("mate", hist.decorator)
+        toolbox.decorate("mutate", hist.decorator)
+        hist.update(pop)
+
+        fpop, logbook = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=5, halloffame=hof)
+
+        best_score = hof[0].fitness.values[:]
+        print(best_score)
+
+
         return fpop, logbook
