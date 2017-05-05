@@ -16,6 +16,18 @@ from features import extractFeatures
 # Returns the best classifiers for faster experiments
 def bestClfs():
 
+    DTC = tree.DecisionTreeClassifier(criterion="gini",
+                                      splitter="best",
+                                      max_features=0.944,
+                                      max_depth=None,
+                                      min_samples_split= 71,
+                                      min_samples_leaf= 5,
+                                      min_weight_fraction_leaf=0,
+                                      max_leaf_nodes=None,
+                                      random_state=None,
+                                      min_impurity_split=0,
+                                      presort=False)
+
     #1 0.548 +-0.015 with beatsdataset.csv (windows and steps 1 1 0.05 0.05) SIN ESSENTIA BPM 0.47
     #2 0.492 +- 0.015 with beatsdataset1-1-01-005.csv
     #3 0.486 +- 0.015 with beatsdataset1-1-01-01.csv
@@ -345,16 +357,30 @@ def unpackDF(df):
 
 #TODO
 def getClf(individual):
+
+    min_samples_split = int(individual[0])
+    if(min_samples_split<2):
+        min_samples_split=2
+
+    min_samples_leaf = int(individual[1])
+    if(min_samples_leaf)<1:
+        min_samples_leaf=1
+
+    max_features=individual[2]
+    if(max_features>1):
+        max_features=1
+
+
     clf = tree.DecisionTreeClassifier(criterion="gini",
                                       splitter="best",
-                                      max_features=None,
-                                      max_depth=8,
-                                      min_samples_split=4,
-                                      min_samples_leaf=10,
+                                      max_features=max_features,
+                                      max_depth=None,
+                                      min_samples_split= min_samples_split,
+                                      min_samples_leaf= min_samples_leaf,
                                       min_weight_fraction_leaf=0,
                                       max_leaf_nodes=None,
                                       random_state=None,
-                                      min_impurity_split=individual[0],
+                                      min_impurity_split=0,
                                       presort=False)
     return clf
 
