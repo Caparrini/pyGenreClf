@@ -198,6 +198,34 @@ def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/C
 
     return df
 
+def dirsExtractBPM(dataset_folder):
+    BPMs = [] # features
+    genre_list = [x for x in os.walk(dataset_folder)][0][1]
+    dirs = [dataset_folder + f + "/" for f in genre_list]
+    for d in dirs:
+        BPMs.extend(dirExtractBPM(d))
+
+    df = pd.DataFrame.from_records(BPMs)
+    pd.DataFrame.to_csv(df, "CSV/madmombpm.csv")
+    return BPMs
+
+
+def dirExtractBPM(dir):
+    BPMs = []
+    songs = [x for x in os.walk(dir)][0][2]
+    for i in range(len(songs)):
+        if ".wav" in songs[i]:
+            BPMs.append(extractBPM(dir+songs[i]))
+    return BPMs
+
+
+def extractBPM(fileRoute):
+    from madmom.features.tempo import TempoEstimationProcessor
+    proc = TempoEstimationProcessor(fps=100)
+    from madmom.features.beats import RNNBeatProcessor
+    act = RNNBeatProcessor()(fileRoute)
+    return tuple(proc(act)[0])
+
 # Extract features from one single audio with x = samples and Fs = Frequency rate
 def extractFeatures(Fs, x, mtWin, mtStep, stWin, stStep):
     t1 = time.clock()
