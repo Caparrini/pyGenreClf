@@ -27,7 +27,12 @@ def bestClfs():
 
 
     ETC = ExtraTreesClassifier(bootstrap=True, criterion="gini",
-                               max_features=0.75, min_samples_leaf=2,
+                               max_features=1, min_samples_leaf=2,
+                               min_samples_split=10, n_estimators=100)
+
+    # Accuracy 138 step 50 with BPM essentia (0.56260869565217386, 0.012251306785743798)
+    ETC = ExtraTreesClassifier(bootstrap=False, criterion="gini",
+                               max_features=0.5, min_samples_leaf=2,
                                min_samples_split=10, n_estimators=100)
 
     # Best with GTZAN
@@ -322,6 +327,7 @@ def TreeKFoldReport(df, report_folder, clf):
     plt.xlim([-1, X.shape[1]])
     plt.show()
     """
+    return clf
 
 
 def unpackDF(df):
