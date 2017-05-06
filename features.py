@@ -91,95 +91,57 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
 
-def pyAudioFeatures70(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/Capa/Datasets/beatsdataset/",
-                      mtWin=1, mtStep=1, stWin=0.05, stStep=0.05):
-
-    genre_list = [x for x in os.walk(dataset_folder)][0][1]
-
-    if(not os.path.exists(dataset_folder)):
-        print("The dataset folder : " + dataset_folder + " does not exist.\n")
-
-    if(os.path.exists(dataset_csv)):
-
-        print("The dataset_csv file already exists.\n")
-        if(not query_yes_no("Do you want to overwrite it?")):
-            return
-
-    dirs = [dataset_folder + f + "/" for f in genre_list]
-    [featuresTotal, labelsTotal, _] = audioFeatureExtraction.dirsWavFeatureExtraction(dirs, mtWin, mtStep, stWin, stStep, True)
-
-    features = []
-    labels = []
-
-    for i in range(len(genre_list)):
-        for ii in range(len(featuresTotal[i])):
-            features.append(featuresTotal[i][ii])
-            labels.append(labelsTotal[i])
-
-    df = pd.DataFrame.from_records(features)
-
-    features_names = ["ZCR", "Energy", "EnergyEntropy", "SpectralCentroid",
-                          "SpectralSpread", "SpectralEntropy", "SpectralFlux",
-                          "SpectralRolloff", "MFCCs", "ChromaVector", "ChromaDeviation"]
-
-    features_names_full = []
-    features_metrics = ["m", "std"]
-
-    for j in range(2):
-        offset = j * 34
-        for i in range(1, 9):
-            features_names_full.append(str(i + offset) + "-" + features_names[i - 1] + features_metrics[j])
-        for i in range(9, 22):
-            features_names_full.append(str(i + offset) + "-" + features_names[8] + str(i - 8) + features_metrics[j])
-        for i in range(22, 34):
-            features_names_full.append(str(i + offset) + "-" + features_names[9] + str(i - 21) + features_metrics[j])
-        features_names_full.append(str(34 + offset) + "-" + features_names[10] + features_metrics[j])
-    features_names_full.append("69-BPM")
-    features_names_full.append("70-BPMconf")
-
-    df.columns = features_names_full
-
-    df["class"] = labels
-    pd.DataFrame.to_csv(df,dataset_csv)
-
-    return df
 
 def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/Capa/Datasets/beatsdataset/",
                     mtWin=1, mtStep=1, stWin=0.05, stStep=0.05):
+    """
+    This method extract the pyAudioAnalysis features from all the dataset given and it saves them in a .csv file using
+    pandas
+    :param dataset_csv: File to write the dataset extraction of features
+    :param dataset_folder: Folder containing the dataset, with one folder for each class
+    :param mtWin: Size of the mid term analysis window
+    :param mtStep: Size of the step of the analysis mid term window
+    :param stWin: Size of the short term analysis window
+    :param stStep: Size of the step of the analysis short term window
+    :return: DataFrame object with features and labels of the dataset
+    """
+    genre_list = [x for x in os.walk(dataset_folder)][0][1] # The class folder names inside the dataset folder
 
-    genre_list = [x for x in os.walk(dataset_folder)][0][1]
-
-    if(not os.path.exists(dataset_folder)):
+    if(not os.path.exists(dataset_folder)): # Error if the folder given does not exist
         print("The dataset folder : " + dataset_folder + " does not exist.\n")
         return
 
-    if(os.path.exists(dataset_csv)):
+    if(os.path.exists(dataset_csv)):    # If the .csv file exist, ask if the user wants to overwrite it
 
         print("The dataset_csv file already exists.\n")
         if(not query_yes_no("Do you want to overwrite it?")):
             return
 
-    dirs = [dataset_folder + f + "/" for f in genre_list]
-    [featuresTotal, labelsTotal, _] = audioFeatureExtraction.dirsWavFeatureExtraction(dirs, mtWin, mtStep, stWin, stStep, True)
+    dirs = [dataset_folder + f + "/" for f in genre_list]   # The class folder full address
+    [featuresTotal, labelsTotal, _] = audioFeatureExtraction.dirsWavFeatureExtraction(dirs, mtWin, mtStep, stWin, stStep, True) # Using pyAudioAnalysis library
 
-    features = []
-    labels = []
+    features = [] # Features list
+    labels = [] # Labels list
 
-    for i in range(len(genre_list)):
+    for i in range(len(genre_list)): # Filling features and labels with the result of audioFeatureExtraction.dirsWavFeatureExtraction()
         for ii in range(len(featuresTotal[i])):
             features.append(featuresTotal[i][ii])
             labels.append(labelsTotal[i])
 
-    df = pd.DataFrame.from_records(features)
+    df = pd.DataFrame.from_records(features) # Generate DataFrame with the features
 
     features_names = ["ZCR", "Energy", "EnergyEntropy", "SpectralCentroid",
                           "SpectralSpread", "SpectralEntropy", "SpectralFlux",
                           "SpectralRolloff", "MFCCs", "ChromaVector", "ChromaDeviation"]
 
     features_names_full = []
-    features_metrics = ["m", "std", "skew", "kurt"]
 
-    for j in range(len(features_metrics)):
+    if(df.shape[1]==70):    # pyAudioAnalysis gets 70 features
+        features_metrics = ["m", "std"]
+    else:                   # if using pyAudioAnalysis modified which gives skews and kurts
+        features_metrics = ["m", "std", "skew", "kurt"]
+
+    for j in range(len(features_metrics)): # Generate the names for the features
         offset = j * 34
         for i in range(1, 9):
             features_names_full.append(str(i + offset) + "-" + features_names[i - 1] + features_metrics[j])
@@ -191,12 +153,12 @@ def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/C
     features_names_full.append(str(len(features_metrics)*34+1)+"-BPM")
     features_names_full.append(str(len(features_metrics)*34+2)+"-BPMconf")
 
-    df.columns = features_names_full
+    df.columns = features_names_full # Added the features names to the DataFrame object
 
-    df["class"] = labels
-    pd.DataFrame.to_csv(df,dataset_csv)
+    df["class"] = labels    # Finally added the class column
+    pd.DataFrame.to_csv(df,dataset_csv) # Export the DataFrame to a .csv file for easy import later
 
-    return df
+    return df # And return the DataFrame
 
 def dirsExtractBPM(dataset_folder):
     BPMs = [] # features
