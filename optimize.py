@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
-from classifier import getClf, KFoldAccuracy
+from classifier import KFoldAccuracy
 from tpot import TPOTClassifier
 from random import random, randint
+from sklearn.tree import DecisionTreeClassifier
+from abc import ABCMeta, abstractmethod
 
 
 def autoTPOT(df, export='tpot_pipe.py'):
@@ -26,28 +28,26 @@ def autoTPOT(df, export='tpot_pipe.py'):
     #print(pipeline_optimizer.score(features_test, labels_test))
     pipeline_optimizer.export(export)
 
+class BaseOptimizer():
+    __metaclass__ = ABCMeta
 
-
-class Optimizer():
     def __init__(self, df):
         self.df = df
 
+    @abstractmethod
+    def getClf(self, individual): pass
+    @abstractmethod
+    def initIndividual(self, pcls, maxints): pass
+
     def evaluateClf(self, individual):
-        mean, std = KFoldAccuracy(self.df, getClf(individual))
+        mean, std = KFoldAccuracy(self.df, self.getClf(individual))
         print("min_samples_split= "+str(individual[0])+"\n"+"min_samples_leaf= "+str(individual[1])+
               "\n" + "max_features= " + str(individual[2])
               +"  ----> Accuracy: " + str(mean) + " +- " + str(std) + "\n")
         return mean,std
 
-    def initIndividual(self, pcls, maxints):
-        min_samples_split = randint(2,maxints[0])
-        min_samples_leaf = randint(1,maxints[1])
-        max_features = random()
-        ind = pcls([min_samples_split,min_samples_leaf, max_features])
-        return ind
-
     #TODO Unfinished
-    def optimizeClf(self):
+    def optimizeClf(self, population=30, generations=3):
         #Using deap, custom for decision tree
         from deap import base, creator, tools, algorithms
         creator.create("FitnessMax", base.Fitness, weights=(1.0,-1.0))
@@ -69,7 +69,7 @@ class Optimizer():
         toolbox.register("evaluate", self.evaluateClf)
 
         # Tools
-        pop = toolbox.population(n=50)
+        pop = toolbox.population(n=population)
         hof = tools.HallOfFame(1)
 
         # History
@@ -78,10 +78,49 @@ class Optimizer():
         toolbox.decorate("mutate", hist.decorator)
         hist.update(pop)
 
-        fpop, logbook = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=5, halloffame=hof)
+        fpop, logbook = algorithms.eaSimple(pop, toolbox, cxpb=0.5, mutpb=0.2, ngen=generations, halloffame=hof)
 
         best_score = hof[0].fitness.values[:]
         print(best_score)
 
 
         return fpop, logbook
+
+
+class TreeOptimizer(BaseOptimizer):
+
+    # TODO
+    def getClf(self, individual):
+
+        min_samples_split = int(individual[0])
+        if (min_samples_split < 2):
+            min_samples_split = 2
+
+        min_samples_leaf = int(individual[1])
+        if (min_samples_leaf) < 1:
+            min_samples_leaf = 1
+
+        max_features = individual[2]
+        if (max_features > 1):
+            max_features = 1
+
+        clf = DecisionTreeClassifier(criterion="gini",
+                                     splitter="best",
+                                     max_features=max_features,
+                                     max_depth=None,
+                                     min_samples_split=min_samples_split,
+                                     min_samples_leaf=min_samples_leaf,
+                                     min_weight_fraction_leaf=0,
+                                     max_leaf_nodes=None,
+                                     random_state=None,
+                                     min_impurity_split=0,
+                                     presort=False)
+        return clf
+    def initIndividual(self, pcls, maxints):
+        min_samples_split = randint(2,maxints[0])
+        min_samples_leaf = randint(1,maxints[1])
+        max_features = random()
+        ind = pcls([min_samples_split,min_samples_leaf, max_features])
+        return ind
+
+
