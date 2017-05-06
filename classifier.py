@@ -355,35 +355,6 @@ def unpackDF(df):
 
     return class_list, features, labels
 
-#TODO
-def getClf(individual):
-
-    min_samples_split = int(individual[0])
-    if(min_samples_split<2):
-        min_samples_split=2
-
-    min_samples_leaf = int(individual[1])
-    if(min_samples_leaf)<1:
-        min_samples_leaf=1
-
-    max_features=individual[2]
-    if(max_features>1):
-        max_features=1
-
-
-    clf = tree.DecisionTreeClassifier(criterion="gini",
-                                      splitter="best",
-                                      max_features=max_features,
-                                      max_depth=None,
-                                      min_samples_split= min_samples_split,
-                                      min_samples_leaf= min_samples_leaf,
-                                      min_weight_fraction_leaf=0,
-                                      max_leaf_nodes=None,
-                                      random_state=None,
-                                      min_impurity_split=0,
-                                      presort=False)
-    return clf
-
 def KFoldAccuracy(df, clf):
 
     _, features, labels = unpackDF(df)
