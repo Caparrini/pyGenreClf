@@ -72,7 +72,8 @@ class BaseOptimizer(object):
 
     def __init__(self, df):
         """
-        :param df: (DataFrame) DataFrame to train and test the classifier (maybe in the future this must be change for features, labes list whis is more usual)
+        :param df: (DataFrame) DataFrame to train and test the classifier 
+        (maybe in the future this must be change for features, labes list whis is more usual)
         """
         self.df = df
         self.params = self.getParams()
@@ -106,6 +107,9 @@ class BaseOptimizer(object):
         :param individual: individual for evaluation
         :return: mean accuracy, standard deviation accuracy
         """
+        for i in range(len(self.params)):
+            individual[i] = self.params[i].correct(individual[i])
+
         mean, std = KFoldAccuracy(self.df, self.getClf(individual))
         out = "Individual evaluation:\n"
         for i in range(len(self.params)):
@@ -129,8 +133,8 @@ class BaseOptimizer(object):
         toolbox.register("mate", tools.cxTwoPoint)
         # TODO the mut changes if the params change, refactor?
         toolbox.register("mutate", tools.mutPolynomialBounded, eta=0.5, low=[x.minValue for x in self.params],
-                         up=[x.maxValue for x in self.params], indpb=0.9)
-        toolbox.register("select", tools.selTournament, tournsize=5)
+                         up=[x.maxValue for x in self.params], indpb=0.2)
+        toolbox.register("select", tools.selTournament, tournsize=2)
         toolbox.register("evaluate", self.evaluateClf)
 
         # Tools
@@ -162,18 +166,17 @@ class TreeOptimizer(BaseOptimizer):
         :param individual: individual to create classifier
         :return: classifier sklearn.tree.DecisionTreeClassifier
         """
-        values = [self.params[i].correct(individual[i]) for i in range(len(self.params))]
 
         clf = DecisionTreeClassifier(criterion="gini",
                                      splitter="best",
-                                     max_features=values[2],
+                                     max_features=individual[2],
                                      max_depth=None,
-                                     min_samples_split=values[0],
-                                     min_samples_leaf=values[1],
+                                     min_samples_split=individual[0],
+                                     min_samples_leaf=individual[1],
                                      min_weight_fraction_leaf=0,
                                      max_leaf_nodes=None,
                                      random_state=None,
-                                     min_impurity_split=0,
+                                     min_impurity_split=1e-7,
                                      presort=False)
         return clf
 
@@ -204,15 +207,13 @@ class ForestOptimizer(BaseOptimizer):
         :param individual: individual to create classifier
         :return: classifier sklearn.ensemble.RandomForestClassifier
         """
-        values = [self.params[i].correct(individual[i]) for i in range(len(self.params))]
-
-        clf = RandomForestClassifier(n_estimators=values[3],
+        clf = RandomForestClassifier(n_estimators=individual[3],
                                      criterion="gini",
                                      max_depth=None,
-                                     min_samples_split=values[0],
-                                     min_samples_leaf=values[1],
+                                     min_samples_split=individual[0],
+                                     min_samples_leaf=individual[1],
                                      min_weight_fraction_leaf=0,
-                                     max_features=values[2],
+                                     max_features=individual[2],
                                      max_leaf_nodes=None,
                                      min_impurity_split=1e-7,
                                      bootstrap=True,
@@ -239,6 +240,6 @@ class ForestOptimizer(BaseOptimizer):
         # max_features
         params.append(Param("max_features", 0, 1, float))
         # n_estimator
-        params.append(Param("n_estimators", 10, 500, int))
+        params.append(Param("n_estimators", 10, 100, int))
         # Return all the params
         return params
