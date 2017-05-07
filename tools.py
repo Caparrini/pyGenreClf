@@ -24,6 +24,7 @@ def songs_to_wav():
 # Class object to generate and save the metrics of the confusion matrix
 # In creation it builds a list of dictionaries with the TP,TN,FP,FN of the cm
 # Summoning each function calculate the asked metric
+#TODO care with zero at the denominator
 class ConfusionMatrixUtils(object):
     """
     cm : confusion matrix (equal rows and columns)
