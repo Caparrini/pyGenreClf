@@ -2,7 +2,7 @@
 from sklearn.model_selection import StratifiedKFold
 # DecissionTreeClassifier algorythm
 from sklearn import tree
-from sklearn.ensemble import ExtraTreesClassifier, GradientBoostingClassifier
+from sklearn.ensemble import ExtraTreesClassifier, GradientBoostingClassifier, RandomForestClassifier
 from xgboost import XGBClassifier
 from sklearn.metrics import confusion_matrix
 from tools import ConfusionMatrixUtils
@@ -16,17 +16,18 @@ from features import extractFeatures
 # Returns the best classifiers for faster experiments
 def bestClfs():
 
-    DTC = tree.DecisionTreeClassifier(criterion="gini",
-                                      splitter="best",
-                                      max_features=0.944,
-                                      max_depth=None,
-                                      min_samples_split= 71,
-                                      min_samples_leaf= 5,
-                                      min_weight_fraction_leaf=0,
-                                      max_leaf_nodes=None,
-                                      random_state=None,
-                                      min_impurity_split=0,
-                                      presort=False)
+    DTC23 = tree.DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=0.982586627292, max_leaf_nodes=None,
+            min_impurity_split=1e-07, min_samples_leaf=15,
+            min_samples_split=61, min_weight_fraction_leaf=0,
+            presort=False, random_state=None, splitter='best')
+    #   ----> Accuracy: 0.553043478261 +- 0.0141287624428
+    RFC23 = RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
+            max_depth=None, max_features=0.497907908371,
+            max_leaf_nodes=None, min_impurity_split=1e-07,
+            min_samples_leaf=2, min_samples_split=2,
+            min_weight_fraction_leaf=0, n_estimators=150, n_jobs=4,
+            oob_score=True, random_state=None, verbose=0, warm_start=False)
 
     #1 0.548 +-0.015 with beatsdataset.csv (windows and steps 1 1 0.05 0.05) SIN ESSENTIA BPM 0.47
     #2 0.492 +- 0.015 with beatsdataset1-1-01-005.csv
@@ -74,7 +75,7 @@ def bestClfs():
                         min_child_weight=6, nthread=4,
                         subsample=0.55)
 
-    clfs = [ETC,GBC,XGB]
+    clfs = [DTC23, RFC23, ETC, GBC, XGB]
     return clfs
 
 #TODO Move to ConfusionMatrixUtils
@@ -117,18 +118,7 @@ def plot_confusion_matrix(cm, classes,
 #TODO Is it necessary?
 def KFoldCrossValidation(df, report_folder, clf):
 
-    # List with the different labels
-    class_list = list(df["class"].drop_duplicates())
-    # List with all the labels
-    labels = list(df["class"].values)
-    # List with the features
-    features = []
-    for j in range(df.shape[0]):
-        item = df.ix[j]
-        features.append([item[i] for i in range(len(item) - 1)])
-
-    # Feature names list
-    features_names_full = list(df.columns.values[:-1])
+    class_list, features, labels = unpackDF(df)
 
     # Create object to split the dataset (in 5 at random but preserving percentage of each class)
     skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=1)
@@ -159,8 +149,9 @@ def KFoldCrossValidation(df, report_folder, clf):
         features_train, features_test = features[train_index], features[test_index]
         labels_train, labels_test = labels[train_index], labels[test_index]
 
-        # Train the classifier
+        # Train the classifier with 80% of samples
         clf.fit(features_train, labels_train)
+        # And predict with the other 20%
         accuracies_kfold.append(clf.score(features_test, labels_test))
 
         # Labels predicted for test split
@@ -179,14 +170,13 @@ def KFoldCrossValidation(df, report_folder, clf):
     # Confusion matrix with all the predicted classes
     cm_kfold_total = confusion_matrix(labels_kfold, labels_kfold_predicted)
 
-
-
     # Get current size and making it bigger
     fig_size = plt.rcParams["figure.figsize"]
 
-    # Set figure width to 12 and height to 9
-    fig_size[0] = 14
-    fig_size[1] = 14
+    # Set figure according with the number of classes
+    size = len(class_list) - len(class_list)*30/100
+    fig_size[0] = size
+    fig_size[1] = size
     plt.rcParams["figure.figsize"] = fig_size
 
 
@@ -259,14 +249,13 @@ def TreeKFoldReport(df, report_folder, clf):
         """
         Ploting the test confusion for the test set
         """
-        # Get current size
+        # Get current size and making it bigger
         fig_size = plt.rcParams["figure.figsize"]
 
-        # Prints: [8.0, 6.0]
-        print("Current size:", fig_size)
-        # Set figure width to 12 and height to 9
-        fig_size[0] = 12
-        fig_size[1] = 12
+        # Set figure according with the number of classes
+        size = len(class_list) - len(class_list) * 30 / 100
+        fig_size[0] = size
+        fig_size[1] = size
         plt.rcParams["figure.figsize"] = fig_size
 
         plt.figure()
