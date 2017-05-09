@@ -239,7 +239,7 @@ class ForestOptimizer(TreeOptimizer):
         """
         params = super(ForestOptimizer, self).getParams()
         # n_estimator
-        params.append(Param("n_estimators", 10, 500, int))
+        params.append(Param("n_estimators", 10, 150, int))
         # Return all the params
         return params
 
