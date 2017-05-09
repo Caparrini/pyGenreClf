@@ -114,7 +114,8 @@ class ConfusionMatrixUtils(object):
         for i in range(len(self.class_names)):
             r+= self.class_names[i]+":\n\t"
             r+= str(self.metrics_class[i])+"\n"
-            r+= "\tPrecision: " + str(self.precision(i)) + " Recall: " + str(self.recall(i)) + " Accuracy: " + str(self.accuracy(i)) +"\n"
+            r+= "\tPrecision: " + str(round(self.precision(i), 2)) + " Recall: " + str(round(self.recall(i), 2)) + \
+                " F1score: " + str(round(self.F1score(i), 2)) +"\n"
         return r
 
     # Transforms the current cmm into a graph
