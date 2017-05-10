@@ -11,7 +11,7 @@ import pydotplus
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
-from features import extractFeatures
+from featuresExtraction import extractFeatures
 
 # Returns the best classifiers for faster experiments
 def bestClfs():
