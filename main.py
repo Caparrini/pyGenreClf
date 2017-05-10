@@ -1,21 +1,30 @@
 import pandas as pd
-import features
+import featuresExtraction
 import classifier
 from sklearn import tree
+import optimize
+import librosa
+import numpy as np
 
-df = pd.DataFrame.from_csv("beatsdataset.csv")
+def main():
+# display some lines
+    df = pd.DataFrame.from_csv("CSV/beatsdataset.csv")
+    clf = classifier.bestClfs()[1]
+    classes, features, labels = classifier.unpackDF(df)
+    clf.fit(features, labels)
+
+    while(True):
+        audio_file = raw_input("Write the path to an audio file (at least 2 min duration)")
+
+        x, Fs = librosa.load(audio_file)
+        x = librosa.resample(x, Fs, 22050)
+        x = librosa.to_mono(x)
+
+        feats = classifier.extractFeatures(22050, x[:22050*120], 1, 1, 0.05, 0.05)
+        feats = np.append(feats, featuresExtraction.extractEssentiaBPM(x))
+
+        print(clf.predict(feats))
 
 
-clf = tree.DecisionTreeClassifier(criterion = "gini",
-                                  splitter = "best",
-                                  max_features = None,
-                                  max_depth = 8,
-                                  min_samples_split = 40,
-                                  min_samples_leaf = 10,
-                                  min_weight_fraction_leaf = 0,
-                                  max_leaf_nodes = None,
-                                  random_state = None,
-                                  min_impurity_split = 0.5,
-                                  presort = False)
 
-classifier.TreeKFoldReport(df,"report/", clf)
+if __name__ == "__main__": main()
