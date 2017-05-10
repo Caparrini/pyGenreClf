@@ -7,6 +7,8 @@ from pyAudioAnalysis import audioFeatureExtraction
 from pyAudioAnalysis import audioBasicIO
 import sys
 import time
+import essentia.standard
+from essentia.standard import *
 
 
 def create_fft(fn):
@@ -204,3 +206,9 @@ def extractFeatures(Fs, x, mtWin, mtStep, stWin, stStep):
     t2 = time.clock()
     print("Processing time : " + str(t2-t1))
     return MidTermFeatures
+
+def extractEssentiaBPM(x):
+
+    rhythm_extractor = RhythmExtractor()
+    bpm, _, _, _ = rhythm_extractor(x)
+    return round(bpm)
