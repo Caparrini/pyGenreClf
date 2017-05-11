@@ -19,7 +19,8 @@ class ExperimentUtils(object):
         """
         self.genres_folder = genres_folder
         self.exp_folder = exp_folder
-        self.genres_dict = {"BigRoom": "A", "ElectroHouse": "B"}
+        self.genres_dict = {"BigRoom": "A", "ElectroHouse": "B", "DrumAndBass": "C",
+                            "Dubstep": "D", "HipHop": "E", "Dance": "F", "FutureHouse": "G"}
         self.inv_genres_dict = dict(map(reversed, self.genres_dict.items()))
 
     def _generate_full_alias_dataframes(self, n_songs):
