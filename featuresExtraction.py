@@ -3,12 +3,17 @@ from scipy.io import wavfile
 import scipy
 import numpy as np
 import os
+import glob
 from pyAudioAnalysis import audioFeatureExtraction
-from pyAudioAnalysis import audioBasicIO
 import sys
 import time
-import essentia.standard
-from essentia.standard import *
+from librosa.beat import beat_track
+import librosa
+try:
+    import essentia.standard
+    from essentia.standard import *
+except ImportError:
+    print("Essentia not installed!")
 
 
 def create_fft(fn):
@@ -28,7 +33,6 @@ def dataset_fft():
             print(ruta)
             create_fft(ruta)
 
-
 def read_fft():
     features = []
     labels = []
@@ -40,24 +44,6 @@ def read_fft():
             if s[-3:]=="npy":
                 ruta = g[0]+"/"+s
                 features.append(np.load(ruta))
-                labels.append(g[0][2:])
-    return features, labels
-
-def song_feature_extraction():
-    features = []
-    labels = []
-    os.chdir("genres/")
-    genre_folders = [x for x in os.walk("./")]
-    genre_folders.pop(0)
-    for g in genre_folders:
-        for s in g[2]:
-            if s[-3:]=="wav":
-                ruta = g[0]+"/"+s
-                [Fs, x] = audioBasicIO.readAudioFile(ruta)
-                AX = audioFeatureExtraction.stFeatureExtraction(x, Fs, Fs*0.05, Fs*0.05)
-                BPM, ratio = audioFeatureExtraction.beatExtraction(AX, 0.05)
-                features.append(BPM)
-                print(features)
                 labels.append(g[0][2:])
     return features, labels
 
@@ -162,7 +148,7 @@ def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/C
 
     return df # And return the DataFrame
 
-def dirsExtractBPM(dataset_folder):
+def dirsExtractBPM(dataset_folder, csv_export_file):
     BPMs = [] # features
     genre_list = [x for x in os.walk(dataset_folder)][0][1]
     dirs = [dataset_folder + f + "/" for f in genre_list]
@@ -170,25 +156,34 @@ def dirsExtractBPM(dataset_folder):
         BPMs.extend(dirExtractBPM(d))
 
     df = pd.DataFrame.from_records(BPMs)
-    pd.DataFrame.to_csv(df, "CSV/madmombpm.csv")
+    pd.DataFrame.to_csv(df, csv_export_file)
     return BPMs
 
 
 def dirExtractBPM(dir):
     BPMs = []
-    songs = [x for x in os.walk(dir)][0][2]
-    for i in range(len(songs)):
-        if ".wav" in songs[i]:
-            BPMs.append(extractBPM(dir+songs[i]))
+
+    types = ('*.wav', '*.aif', '*.mp3', '*.au', '*.aiff', '*.flac')
+    audioFiles = []
+    for files in types:
+        audioFiles.extend(glob.glob(os.path.join(dir, files)))
+    for audioFile in audioFiles:
+        BPMs.append([fileExtractBPM(audioFile)])
     return BPMs
 
 
-def extractBPM(fileRoute):
+def fileExtractBPM(fileRoute):
+    """
     from madmom.features.tempo import TempoEstimationProcessor
     proc = TempoEstimationProcessor(fps=100)
     from madmom.features.beats import RNNBeatProcessor
     act = RNNBeatProcessor()(fileRoute)
     return tuple(proc(act)[0])
+    """
+    x, Fs = librosa.load(fileRoute)
+    x = librosa.resample(x, Fs, 22050)
+    x = librosa.to_mono(x)
+    return extractBPM(x)
 
 # Extract features from one single audio with x = samples and Fs = Frequency rate
 def extractFeatures(Fs, x, mtWin, mtStep, stWin, stStep):
@@ -202,15 +197,17 @@ def extractFeatures(Fs, x, mtWin, mtStep, stWin, stStep):
 
     MidTermFeatures = np.append(MidTermFeatures, beat)
     MidTermFeatures = np.append(MidTermFeatures, beatConf)
-    #TODO Try catch this
-    MidTermFeatures = np.append(MidTermFeatures, extractEssentiaBPM(x))
+    MidTermFeatures = np.append(MidTermFeatures, extractBPM(x))
 
     t2 = time.clock()
     print("Processing time : " + str(t2-t1))
     return MidTermFeatures
 
-def extractEssentiaBPM(x):
-
-    rhythm_extractor = RhythmExtractor()
-    bpm, _, _, _ = rhythm_extractor(x)
+def extractBPM(x):
+    try:
+        rhythm_extractor = RhythmExtractor()
+        bpm, _, _, _ = rhythm_extractor(x)
+    except NameError:
+        # Essentia is not in the system, using librosa instead
+        bpm, _ = beat_track(x)
     return round(bpm)
