@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import itertools
 from featuresExtraction import extractFeatures
+import joblib
 
 # Returns the best classifiers for faster experiments
 def bestClfs():
@@ -375,17 +376,3 @@ def KFoldAccuracy(df, clf):
     std = np.std(accuracies_kfold)
 
     return meanAccuracy, std
-
-class GenreClassifier(object):
-    def __init__(self):
-        self.clf = ExtraTreesClassifier(bootstrap=True, criterion="gini", max_features=0.75, min_samples_leaf=2, min_samples_split=10, n_estimators=100)
-        df = pd.DataFrame.from_csv("beatsdataset138-stStep50.csv")
-        _, features, labels = unpackDF(df)
-        features = np.array(features)
-        labels = np.array(labels)
-        self.clf.fit(features, labels)
-
-    def predict(self, Fs, x):
-        features = extractFeatures(Fs, x, 1, 1, 0.05, 0.05)
-        features[137] = 0
-        return self.clf.predict(features)
