@@ -172,7 +172,7 @@ class TreeOptimizer(BaseOptimizer):
 
         clf = DecisionTreeClassifier(criterion="gini",
                                      splitter="best",
-                                     max_features=1,
+                                     max_features=None,
                                      max_depth=None,
                                      min_samples_split=individual[0],
                                      min_samples_leaf=individual[1],
@@ -191,9 +191,9 @@ class TreeOptimizer(BaseOptimizer):
         """
         params = []
         # min_samples_split
-        params.append(Param("min_samples_split", 2, 40, int))
+        params.append(Param("min_samples_split", 2, 100, int))
         # min_samples_leaf
-        params.append(Param("min_samples_leaf", 1, 30, int))
+        params.append(Param("min_samples_leaf", 1, 100, int))
         # Return all the params
         return params
 
