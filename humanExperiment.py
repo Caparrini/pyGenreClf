@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 from shutil import copy2
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, accuracy_score
 
 
 class ExperimentUtils(object):
@@ -112,16 +112,7 @@ class ExperimentUtils(object):
         :return: Nothing
         """
         dftest = pd.DataFrame.from_csv(os.path.join(self.exp_folder, "evaluation", "test_songs.csv"))
-        dfeval = pd.DataFrame()
-        # Generate DataFrame with the name of the songs and the label predicted by the subject
-        for key in self.inv_genres_dict:
-            dfaux = pd.DataFrame()
-            songs = [y.replace(".mp3", "") for y in
-                     [x for x in os.walk(os.path.join(self.exp_folder, "test", key))][0][2] if ".mp3" in y]
-            dfaux["test_name"] = songs
-            pred_labels = [self.inv_genres_dict[key]] * len(songs)
-            dfaux["pred_class"] = pred_labels
-            dfeval = pd.concat([dfeval, dfaux])
+        dfeval = self.get_evaluation_df(os.path.join(self.exp_folder, "test"))
         # Joining the DataFrame we used and the one results from the user by the "test_name" column in both
         dfeval = pd.merge(dftest, dfeval)
         labels = dfeval["class"]  # Real class
@@ -131,3 +122,40 @@ class ExperimentUtils(object):
         return cm
         # TODO to improve show results
         # TODO option for save more than one result
+
+    def get_evaluation_df(self, test_folder):
+        dfeval = pd.DataFrame()
+        # Generate DataFrame with the name of the songs and the label predicted by the subject
+        for key in self.inv_genres_dict:
+            dfaux = pd.DataFrame()
+            songs = [y.replace(".mp3", "") for y in
+                     [x for x in os.walk(os.path.join(test_folder, key))][0][2] if ".mp3" in y]
+            dfaux["test_name"] = songs
+            pred_labels = [self.inv_genres_dict[key]] * len(songs)
+            dfaux["pred_class"] = pred_labels
+            dfeval = pd.concat([dfeval, dfaux])
+        return dfeval
+
+    def evaluate_all_exps(self, experiments_folder):
+
+        accuracies = []
+        dftest = pd.DataFrame.from_csv(os.path.join(self.exp_folder, "evaluation", "test_songs.csv"))
+        experiment_folders = [x for x in os.walk(experiments_folder)][0][1]
+        dffinal = pd.DataFrame()
+
+        for f in experiment_folders:
+            dfeval = self.get_evaluation_df(os.path.join(experiments_folder,f,"test"))
+            dfeval = pd.merge(dftest, dfeval)
+            labels = dfeval["class"]  # Real class
+            pred_labels = dfeval["pred_class"]  # Predicted class
+            accuracies.append(accuracy_score(labels, pred_labels))
+            dffinal = pd.concat([dffinal, dfeval])
+
+        labels = dffinal["class"]  # Real class
+        pred_labels = dffinal["pred_class"]  # Predicted class
+        cm = confusion_matrix(labels, pred_labels, self.genres_dict.keys())
+        print(cm)
+        print(accuracies)
+        print(np.mean(accuracies))
+        print(np.std(accuracies))
+        return cm
