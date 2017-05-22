@@ -172,7 +172,7 @@ class TreeOptimizer(BaseOptimizer):
 
         clf = DecisionTreeClassifier(criterion="gini",
                                      splitter="best",
-                                     max_features=individual[2],
+                                     max_features=1,
                                      max_depth=None,
                                      min_samples_split=individual[0],
                                      min_samples_leaf=individual[1],
@@ -194,8 +194,6 @@ class TreeOptimizer(BaseOptimizer):
         params.append(Param("min_samples_split", 2, 40, int))
         # min_samples_leaf
         params.append(Param("min_samples_leaf", 1, 30, int))
-        # max_features
-        params.append(Param("max_features", 0, 1, float))
         # Return all the params
         return params
 
@@ -236,6 +234,8 @@ class ForestOptimizer(TreeOptimizer):
         :return: list of params
         """
         params = super(ForestOptimizer, self).getParams()
+        # max_features
+        params.append(Param("max_features", 0, 1, float))
         # n_estimator
         params.append(Param("n_estimators", 10, 150, int))
         # Return all the params
