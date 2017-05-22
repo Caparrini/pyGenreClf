@@ -1,7 +1,5 @@
 import numpy as np
-import pandas as pd
 from classifier import KFoldAccuracy
-from tpot import TPOTClassifier
 from random import random, randint
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
@@ -272,24 +270,3 @@ class ExtraTreesOptimizer(ForestOptimizer):
                                    warm_start=False,
                                    class_weight=None)
         return clf
-
-def autoTPOT(df, export='tpot_pipe.py'):
-    # labels = list(df["class"].values)
-    features = []
-    for j in range(df.shape[0]):
-        item = df.ix[j]
-        features.append([item[i] for i in range(len(item) - 1)])
-
-    features = np.array(features)
-
-    labels, uniques = pd.factorize(df["class"])
-
-    # from sklearn.model_selection import train_test_split
-
-    # features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size=0.2)
-
-    pipeline_optimizer = TPOTClassifier(generations=10, population_size=10, verbosity=3)
-
-    pipeline_optimizer.fit(features, labels)
-    # print(pipeline_optimizer.score(features_test, labels_test))
-    pipeline_optimizer.export(export)
