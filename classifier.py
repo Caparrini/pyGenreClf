@@ -1,6 +1,4 @@
-# Provides train/test split preserving percentage of samples for each class
 from sklearn.model_selection import StratifiedKFold
-# DecissionTreeClassifier algorythm
 from sklearn import tree
 from sklearn.ensemble import ExtraTreesClassifier, GradientBoostingClassifier, RandomForestClassifier
 from xgboost import XGBClassifier
@@ -78,7 +76,6 @@ def bestClfs():
     clfs = [DTC23, RFC23, ETC, GBC, XGB]
     return clfs
 
-#TODO Move to ConfusionMatrixUtils
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
@@ -297,39 +294,28 @@ def TreeKFoldReport(df, report_folder, clf):
     graph = pydotplus.graph_from_dot_data(dot_data)
     graph.write_pdf(report_folder + "FinalTree.pdf")
 
-    importances = clf.feature_importances_
-    X = features
-    std = np.std([clf.feature_importances_],
-                 axis=0)
+    return clf
+
+def plot_feature_importances(tree_classifier, features):
+    importances = tree_classifier.feature_importances_
+    std = np.std([importances], axis=0)
     indices = np.argsort(importances)[::-1]
 
-    # Print the feature ranking
     print("Feature ranking:")
+    for f in range(features.shape[1]):
+        print("%d. feature %d (%f)" % (f+1, indices(f), importances[indices[f]]))
 
-    for f in range(X.shape[1]):
-        print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
-
-    """
-    # Plot the feature importances of the forest
     plt.figure()
-    # Get current size
     fig_size = plt.rcParams["figure.figsize"]
-
-    # Prints: [8.0, 6.0]
-    print("Current size:", fig_size)
-    # Set figure width to 12 and height to 9
     fig_size[0] = 12
     fig_size[1] = 12
     plt.rcParams["figure.figsize"] = fig_size
     plt.title("Feature importances")
-    plt.bar(range(X.shape[1]), importances[indices],
-            color="r", yerr=std[indices], align="center")
-    plt.xticks(range(X.shape[1]), indices)
-    plt.xlim([-1, X.shape[1]])
+    plt.bar(range(features.shape[1]), importances[indices],
+            color="b", yerr=std[indices], align="center")
+    plt.xticks(range(features.shape[1]), indices)
+    plt.xlim([-1, features.shape[1]])
     plt.show()
-    """
-    return clf
-
 
 def unpackDF(df):
     # List with the different labels
