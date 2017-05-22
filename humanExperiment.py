@@ -128,5 +128,6 @@ class ExperimentUtils(object):
         pred_labels = dfeval["pred_class"]  # Predicted class
         cm = confusion_matrix(labels, pred_labels, self.genres_dict.keys())
         print(cm)
+        return cm
         # TODO to improve show results
         # TODO option for save more than one result
