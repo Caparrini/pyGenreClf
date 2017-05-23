@@ -54,10 +54,10 @@ class ExperimentUtils(object):
         """
         songs = [y for y in [x for x in os.walk(genre_folder)][0][2] if ".mp3" in y]
         if (len(songs) != 100):
-            print("WARNING: The genre folder " + genre_folder + " only have " + str(len(songs)) + " canciones.")
+            print("WARNING: The genre folder " + genre_folder + " only have " + str(len(songs)) + " songs.")
         genre = os.path.basename(genre_folder)
         label_names = [genre + str(x / 100) + str((x % 100) / 10) + str(x % 10) for x in range(1, len(songs) + 1)]
-        labels = [genre] * 100
+        labels = [genre] * len(songs)
         df = pd.DataFrame()
         df["class"] = labels  # genre label
         df["real_name"] = songs  # filename
