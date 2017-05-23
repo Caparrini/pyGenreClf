@@ -160,13 +160,13 @@ def dirsExtractBPM(dataset_folder, csv_export_file):
     return BPMs
 
 
-def dirExtractBPM(dir):
+def dirExtractBPM(folder):
     BPMs = []
 
     types = ('*.wav', '*.aif', '*.mp3', '*.au', '*.aiff', '*.flac')
     audioFiles = []
     for files in types:
-        audioFiles.extend(glob.glob(os.path.join(dir, files)))
+        audioFiles.extend(glob.glob(os.path.join(folder, files)))
     for audioFile in audioFiles:
         BPMs.append([fileExtractBPM(audioFile)])
     return BPMs
