@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import networkx as nx
+import pandas as pd
 
 
 # Given the route of the genres directory, transforms every song into 
@@ -167,3 +168,19 @@ def beatsdataset():
         print("Transferred " + str(count) + " songs\n")
         print("Closing list file: " + g + "/")
         songsListFile.close()
+
+def create_registry_dataset(dataset_foler, format=".wav"):
+    folders = [x for x in os.walk(dataset_foler)][0][1]
+    df = pd.DataFrame()
+    for f in folders:
+        audioFiles = [y.replace(format,"") for y in [x for x in os.walk(os.path.join(dataset_foler, f))][0][2] if format in y]
+        if (len(audioFiles) != 100):
+            print("WARNING: The genre folder " + f + " only have " + str(len(audioFiles)) + " songs.")
+        label_names = [f + str(x / 100) + str((x % 100) / 10) + str(x % 10) for x in range(1, len(audioFiles) + 1)]
+        labels = [f] * len(audioFiles)
+        dfaux = pd.DataFrame()
+        dfaux["class"] = labels  # genre label
+        dfaux["real_name"] = audioFiles  # filename
+        dfaux["label_name"] = label_names  # dataset name
+        df = pd.concat([df, dfaux])
+    return df
