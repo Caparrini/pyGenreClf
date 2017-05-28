@@ -16,7 +16,7 @@ import joblib
 def bestClfs():
 
     DTC23 = tree.DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
-            max_features=0.982586627292, max_leaf_nodes=None,
+            max_features=None, max_leaf_nodes=None,
             min_impurity_split=1e-07, min_samples_leaf=15,
             min_samples_split=61, min_weight_fraction_leaf=0,
             presort=False, random_state=None, splitter='best')
@@ -28,6 +28,18 @@ def bestClfs():
             min_weight_fraction_leaf=0, n_estimators=150, n_jobs=4,
             oob_score=True, random_state=None, verbose=0, warm_start=False)
 
+    DTC7 = tree.DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+            max_features=None, max_leaf_nodes=None,
+            min_impurity_split=1e-07, min_samples_leaf=9,
+            min_samples_split=40, min_weight_fraction_leaf=0,
+            presort=False, random_state=None, splitter='best')
+    #   ----> Accuracy: 0.553043478261 +- 0.0141287624428
+    RFC7 = RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
+            max_depth=None, max_features=0.59,
+            max_leaf_nodes=None, min_impurity_split=1e-07,
+            min_samples_leaf=2, min_samples_split=15,
+            min_weight_fraction_leaf=0, n_estimators=84, n_jobs=4,
+            oob_score=True, random_state=None, verbose=0, warm_start=False)
     #1 0.548 +-0.015 with beatsdataset.csv (windows and steps 1 1 0.05 0.05) SIN ESSENTIA BPM 0.47
     #2 0.492 +- 0.015 with beatsdataset1-1-01-005.csv
     #3 0.486 +- 0.015 with beatsdataset1-1-01-01.csv
@@ -74,7 +86,7 @@ def bestClfs():
                         min_child_weight=6, nthread=4,
                         subsample=0.55)
 
-    clfs = [DTC23, RFC23, ETC, GBC, XGB]
+    clfs = [DTC23, RFC23, DTC7, RFC7]
     return clfs
 
 def plot_confusion_matrix(cm, classes,
@@ -297,25 +309,25 @@ def TreeKFoldReport(df, report_folder, clf):
 
     return clf
 
-def plot_feature_importances(tree_classifier, features):
+def plot_feature_importances(tree_classifier, X, X_names, nfeat=10):
     importances = tree_classifier.feature_importances_
-    std = np.std([importances], axis=0)
-    indices = np.argsort(importances)[::-1]
+    std = np.std([importances], axis=0) #Does nothing
+    indices = importances.argsort()[-nfeat:][::-1]
 
     print("Feature ranking:")
-    for f in range(features.shape[1]):
-        print("%d. feature %d (%f)" % (f+1, indices(f), importances[indices[f]]))
+    for f in range(nfeat):
+        print("%d. feature %d (%f)" % (f+1, indices[f], importances[indices[f]]))
 
     plt.figure()
     fig_size = plt.rcParams["figure.figsize"]
-    fig_size[0] = 12
-    fig_size[1] = 12
+    fig_size[0] = 8
+    fig_size[1] = 6
     plt.rcParams["figure.figsize"] = fig_size
     plt.title("Feature importances")
-    plt.bar(range(features.shape[1]), importances[indices],
+    plt.bar(range(nfeat), importances[indices],
             color="b", yerr=std[indices], align="center")
-    plt.xticks(range(features.shape[1]), indices)
-    plt.xlim([-1, features.shape[1]])
+    plt.xticks(range(nfeat), X_names[indices], rotation=45)
+    plt.xlim([-1, nfeat])
     plt.show()
 
 def unpackDF(df):
