@@ -309,7 +309,7 @@ def TreeKFoldReport(df, report_folder, clf):
 
     return clf
 
-def plot_feature_importances(tree_classifier, X, X_names, nfeat=10):
+def plot_feature_importances(tree_classifier, X, X_names, nfeat=10, dimx=8, dimy=6):
     importances = tree_classifier.feature_importances_
     std = np.std([importances], axis=0) #Does nothing
     indices = importances.argsort()[-nfeat:][::-1]
@@ -320,13 +320,13 @@ def plot_feature_importances(tree_classifier, X, X_names, nfeat=10):
 
     plt.figure()
     fig_size = plt.rcParams["figure.figsize"]
-    fig_size[0] = 8
-    fig_size[1] = 6
+    fig_size[0] = dimx
+    fig_size[1] = dimy
     plt.rcParams["figure.figsize"] = fig_size
     plt.title("Feature importances")
     plt.bar(range(nfeat), importances[indices],
             color="b", yerr=std[indices], align="center")
-    plt.xticks(range(nfeat), X_names[indices], rotation=45)
+    plt.xticks(range(nfeat), X_names[indices], rotation=45, size="x-small")
     plt.xlim([-1, nfeat])
     plt.show()
 
