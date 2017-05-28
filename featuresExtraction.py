@@ -151,7 +151,7 @@ def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/C
 def dirsExtractBPM(dataset_folder, csv_export_file):
     BPMs = [] # features
     genre_list = [x for x in os.walk(dataset_folder)][0][1]
-    dirs = [dataset_folder + f + "/" for f in genre_list]
+    dirs = [os.path.join(dataset_folder,f) for f in genre_list]
     for d in dirs:
         BPMs.extend(dirExtractBPM(d))
 
