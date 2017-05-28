@@ -159,3 +159,17 @@ class ExperimentUtils(object):
         print(np.mean(accuracies))
         print(np.std(accuracies))
         return cm
+
+    def evaluate_all_forest_style(self, experiments_folder):
+        accuracies = []
+        dftest = pd.DataFrame.from_csv(os.path.join(self.exp_folder, "evaluation", "test_songs.csv"))
+        experiment_folders = [x for x in os.walk(experiments_folder)][0][1]
+        dffinal = pd.DataFrame()
+        for f in experiment_folders:
+            dfeval = self.get_evaluation_df(os.path.join(experiments_folder,f,"test"))
+            dfeval = pd.merge(dftest, dfeval)
+            labels = dfeval["class"]  # Real class
+            pred_labels = dfeval["pred_class"]  # Predicted class
+            accuracies.append(accuracy_score(labels, pred_labels))
+            dffinal = pd.concat([dffinal, dfeval])
+        return dffinal
