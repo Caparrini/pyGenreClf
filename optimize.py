@@ -138,6 +138,7 @@ class BaseOptimizer(object):
         print("Best classifier: "+str(self.getClf(hof[0])))
 
         self.plotLogbook(logbook=logbook)
+        return self.getClf(hof[0])
 
     def plotLogbook(self, logbook):
 
