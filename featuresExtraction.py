@@ -79,19 +79,19 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
 
-
 def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/Capa/Datasets/beatsdataset/",
                     mtWin=1, mtStep=1, stWin=0.05, stStep=0.05):
     """
     This method extract the pyAudioAnalysis features from all the dataset given and it saves them in a .csv file using
-    pandas
-    :param dataset_csv: File to write the dataset extraction of features
-    :param dataset_folder: Folder containing the dataset, with one folder for each class
-    :param mtWin: Size of the mid term analysis window
-    :param mtStep: Size of the step of the analysis mid term window
-    :param stWin: Size of the short term analysis window
-    :param stStep: Size of the step of the analysis short term window
-    :return: DataFrame object with features and labels of the dataset
+    pandas.
+
+    :param str dataset_csv: File to write the dataset extraction of features
+    :param str dataset_folder: Folder containing the dataset, with one folder for each class
+    :param float mtWin: Size of the mid term analysis window
+    :param float mtStep: Size of the step of the analysis mid term window
+    :param float stWin: Size of the short term analysis window
+    :param float stStep: Size of the step of the analysis short term window
+    :return DataFrame: DataFrame object with features and labels of the dataset
     """
     genre_list = [x for x in os.walk(dataset_folder)][0][1] # The class folder names inside the dataset folder
 
@@ -148,19 +148,28 @@ def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/C
 
     return df # And return the DataFrame
 
-def dirsExtractBPM(dataset_folder, csv_export_file):
+def dirsExtractBPM(dataset_folder):
+    '''
+    Folder with subfolder to extract all the BPMs
+
+    :param str dataset_folder: Folder with folder of audiofiles
+    :return list: List ob BPMs of all the songs in the folder subfolders
+    '''
     BPMs = [] # features
     genre_list = [x for x in os.walk(dataset_folder)][0][1]
     dirs = [os.path.join(dataset_folder,f) for f in genre_list]
     for d in dirs:
         BPMs.extend(dirExtractBPM(d))
 
-    df = pd.DataFrame.from_records(BPMs)
-    pd.DataFrame.to_csv(df, csv_export_file)
     return BPMs
 
-
 def dirExtractBPM(folder):
+    '''
+    Generate a list of BPM of each song in the given folder
+
+    :param str folder: Folder with audio file to extract BPMs
+    :return list: List of BPMs of every song in the folder
+    '''
     BPMs = []
 
     types = ('*.wav', '*.aif', '*.mp3', '*.au', '*.aiff', '*.flac')
@@ -168,25 +177,49 @@ def dirExtractBPM(folder):
     for files in types:
         audioFiles.extend(glob.glob(os.path.join(folder, files)))
     for audioFile in audioFiles:
-        BPMs.append([fileExtractBPM(audioFile)])
+        BPMs.append(fileExtractBPM(audioFile))
     return BPMs
 
-
 def fileExtractBPM(fileRoute):
-    """
-    from madmom.features.tempo import TempoEstimationProcessor
-    proc = TempoEstimationProcessor(fps=100)
-    from madmom.features.beats import RNNBeatProcessor
-    act = RNNBeatProcessor()(fileRoute)
-    return tuple(proc(act)[0])
-    """
+    '''
+    It gets the BPM from an audio file
+
+    :param str fileRoute: Audio file to extract BPM
+    :return float: BPM of the audio file
+    '''
     x, Fs = librosa.load(fileRoute)
     x = librosa.resample(x, Fs, 22050)
     x = librosa.to_mono(x)
     return extractBPM(x)
 
-# Extract features from one single audio with x = samples and Fs = Frequency rate
+def extractBPM(x):
+    '''
+    Extract the BPM from the list of samples of an audio file.
+    It tries to use essentia, if it is not installed then it used librosa.
+
+    :param list x: List of samples from an audio file
+    :return float: BPM of the samples of the audio file
+    '''
+    try:
+        rhythm_extractor = RhythmExtractor()
+        bpm, _, _, _ = rhythm_extractor(x)
+    except NameError:
+        # Essentia is not in the system, using librosa instead
+        bpm, _ = beat_track(x)
+    return round(bpm)
+
 def extractFeatures(Fs, x, mtWin, mtStep, stWin, stStep):
+    '''
+    Extract 71 feature of a singe audio file where x are the sample and Fs the frequency rate.
+
+    :param Fs: Frequency rate of the audio file
+    :param x: Listo of samples
+    :param float mtWin: Mid-Term analysis window
+    :param float mtStep: Mid-Term step
+    :param float stWin: Short-Term analysis window
+    :param float stStep: Short-Term step
+    :return list: List of 71 features
+    '''
     t1 = time.clock()
 
     [MidTermFeatures, stFeatures] = audioFeatureExtraction.mtFeatureExtraction(x, Fs, round(mtWin*Fs), round(mtStep*Fs), round(Fs*stWin), round(Fs * stStep))
@@ -203,11 +236,41 @@ def extractFeatures(Fs, x, mtWin, mtStep, stWin, stStep):
     print("Processing time : " + str(t2-t1))
     return MidTermFeatures
 
-def extractBPM(x):
-    try:
-        rhythm_extractor = RhythmExtractor()
-        bpm, _, _, _ = rhythm_extractor(x)
-    except NameError:
-        # Essentia is not in the system, using librosa instead
-        bpm, _ = beat_track(x)
-    return round(bpm)
+def extractFeaturesFolder(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/Capa/Datasets/beatsdataset/",
+                    mtWin=1, mtStep=1, stWin=0.05, stStep=0.05):
+    '''
+    Extract 71 audio features from every audio file in the dataset_folder.
+    Write the result in the dataset_csv file which is a pandas DataFrame.
+    The dataset_folder must have audio files classified in subfolders.
+
+    :param str dataset_csv:
+    :param str dataset_folder:
+    :param float mtWin:
+    :param float mtStep:
+    :param float stWin:
+    :param float stStep:
+    :return: DataFrame with the classes and 71 features
+    '''
+    if(not os.path.exists(dataset_folder)): # Error if the folder given does not exist
+        print("The dataset folder : " + dataset_folder + " does not exist.\n")
+        return
+
+    if(os.path.exists(dataset_csv)):    # If the .csv file exist, ask if the user wants to overwrite it
+
+        print("The dataset_csv file already exists.\n")
+        if(not query_yes_no("Do you want to overwrite it?")):
+            return
+
+    df = pyAudioFeatures("pyaa-"+dataset_csv, dataset_folder, mtWin, mtStep, stWin, stStep)
+    bpms = dirsExtractBPM(dataset_folder)
+    df["71-BPM"] = bpms
+    #swap
+    columns = list(df.columns)
+    n = len(columns)-1
+    aux = columns[n]
+    columns[n]=columns[n-1]
+    columns[n-1] = aux
+    df = df[columns]
+    pd.DataFrame.to_csv(df,dataset_csv) # Export the DataFrame to a .csv file for easy import later
+    return df
+
