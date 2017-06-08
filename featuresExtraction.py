@@ -239,16 +239,17 @@ def extractFeatures(Fs, x, mtWin, mtStep, stWin, stStep):
 def extractFeaturesFolder(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/Capa/Datasets/beatsdataset/",
                     mtWin=1, mtStep=1, stWin=0.05, stStep=0.05):
     '''
+    MAIN METHOD.
     Extract 71 audio features from every audio file in the dataset_folder.
     Write the result in the dataset_csv file which is a pandas DataFrame.
     The dataset_folder must have audio files classified in subfolders.
 
-    :param str dataset_csv:
-    :param str dataset_folder:
-    :param float mtWin:
-    :param float mtStep:
-    :param float stWin:
-    :param float stStep:
+    :param str dataset_csv: File to write the pandas.DataFrame resulting
+    :param str dataset_folder: Folder with the audio samples to extract features.
+    :param float mtWin: Size of mid term analysis windows
+    :param float mtStep: Step of mid term analysis windows
+    :param float stWin: Size of short term analysis windows
+    :param float stStep: Step of short term analysis windows
     :return: DataFrame with the classes and 71 features
     '''
     if(not os.path.exists(dataset_folder)): # Error if the folder given does not exist
