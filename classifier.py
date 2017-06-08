@@ -1,7 +1,6 @@
 from sklearn.model_selection import StratifiedKFold
 from sklearn import tree
 from sklearn.ensemble import ExtraTreesClassifier, GradientBoostingClassifier, RandomForestClassifier
-from xgboost import XGBClassifier
 from sklearn.metrics import confusion_matrix
 from tools import ConfusionMatrixUtils
 import pandas as pd
@@ -11,6 +10,10 @@ import matplotlib.pyplot as plt
 import itertools
 from featuresExtraction import extractFeatures
 import joblib
+try:
+    from xgboost import XGBClassifier
+except ImportError:
+    print("xgboost not installed!")
 
 # Returns the best classifiers for faster experiments
 def bestClfs():
@@ -105,7 +108,7 @@ def plot_confusion_matrix(cm, classes,
     plt.yticks(tick_marks, classes)
 
     if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        cm = np.round(100*cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]).astype('int')
         print("Normalized confusion matrix")
     else:
         print('Confusion matrix, without normalization')
