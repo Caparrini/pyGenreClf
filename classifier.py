@@ -7,6 +7,7 @@ import pydotplus
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
+import os
 try:
     from xgboost import XGBClassifier
 except ImportError:
@@ -158,7 +159,7 @@ def KFoldCrossValidation(df, report_folder, clf):
     kcounter = 0
 
     # Report file with useful information
-    report = open(report_folder + "report.txt", "w")
+    report = open(os.path.join(report_folder,"report.txt"), "w")
 
     # Iterate over the KFolds and do stuff
     for train_index, test_index in skf.split(features, labels):
