@@ -2,7 +2,10 @@ import pandas as pd
 import classifier
 import librosa
 import argparse
+import joblib
 from featuresExtraction import extractFeaturesFolder
+from optimize import ForestOptimizer
+from classifier import KFoldCrossValidation
 
 def main():
 # display some lines
@@ -35,6 +38,15 @@ def parse_arguments():
     featExt.add_argument("-sw", "--stwin", type=float, default=0.050, help="Short-term window size")
     featExt.add_argument("-ss", "--ststep", type=float, default=0.050, help="Short-term window step")
 
+    bestClf = tasks.add_parser("bestForestClassifier", help="Generate the best random forest classifier and generates a report")
+    bestClf.add_argument("-df", "--DataFrame", required=True, help="Input pandas.DataFrame dataset")
+    bestClf.add_argument("-o", "--clf_file", required=True, help="Generated binary classifier file")
+    bestClf.add_argument("-f", "--report_folder", required=True, help="Folder to save all the report data")
+    bestClf.add_argument("-p", "--population", type=int, default=30, help="Initial population for genetic algorithm")
+    bestClf.add_argument("-g", "--generations", type=int, default=50, help="Number of generations")
+
+
+
     return parser.parse_args()
 
 if __name__ == "__main__":
@@ -42,3 +54,9 @@ if __name__ == "__main__":
 
     if args.task == "featureExtractionDataset":
         extractFeaturesFolder(args.output_DataFrame, args.dataset_folder, args.mtwin, args.mtstep, args.stwin, args.ststep)
+    elif args.task == "bestForestClassifier":
+        df = pd.DataFrame.from_csv(args.DataFrame)
+        opt = ForestOptimizer(df)
+        clf = opt.optimizeClf(args.population, args.generations)
+        clf = KFoldCrossValidation(df, args.report_folder, clf)
+        joblib.dump(clf, args.clf_file)
