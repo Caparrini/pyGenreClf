@@ -21,13 +21,13 @@ def songs_to_wav():
                 '" -acodec pcm_s16le -ar 22050 -ac 1 "' + ruta + '.wav"')
                 os.remove(ruta)
 
-
-# Class object to generate and save the metrics of the confusion matrix
-# In creation it builds a list of dictionaries with the TP,TN,FP,FN of the cm
-# Summoning each function calculate the asked metric
 #TODO care with zero at the denominator
 class ConfusionMatrixUtils(object):
     """
+    Class object to generate and save the metrics of the confusion matrix.
+    In creation it builds a list of dictionaries with the TP,TN,FP,FN of the cm.
+    Summoning each function calculate the asked metric.
+
     cm : confusion matrix (equal rows and columns)
     class_names : list of names of the classes present in the confusion matrix ( len = cm.shape[0] = cm.shape[1] )
     """
@@ -137,7 +137,6 @@ class ConfusionMatrixUtils(object):
                                weight=self.cm[i][j])
 
         return G
-
 
 def beatsdataset():
     # Base folder with songs in mp3

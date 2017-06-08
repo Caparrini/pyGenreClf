@@ -1,15 +1,12 @@
 from sklearn.model_selection import StratifiedKFold
 from sklearn import tree
-from sklearn.ensemble import ExtraTreesClassifier, GradientBoostingClassifier, RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix
 from tools import ConfusionMatrixUtils
-import pandas as pd
 import pydotplus
 import numpy as np
 import matplotlib.pyplot as plt
 import itertools
-from featuresExtraction import extractFeatures
-import joblib
 try:
     from xgboost import XGBClassifier
 except ImportError:
@@ -127,11 +124,17 @@ def plot_confusion_matrix(cm, classes,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-
-
-
-#TODO Is it necessary?
 def KFoldCrossValidation(df, report_folder, clf):
+    '''
+    Generates a report using KFold cross validation.
+    It generate train/test cm for each kfold, a final kfold with all the test splits and a report.txt with metrics and
+    other data.
+
+    :param df: pandas.DataFrame with the dataset
+    :param report_folder: folder where save pics and report
+    :param clf: classifier with methods fit, score and predict
+    :return: clf trained with all the data
+    '''
 
     class_list, features, labels = unpackDF(df)
 
@@ -206,8 +209,15 @@ def KFoldCrossValidation(df, report_folder, clf):
 
     return clf
 
-#TODO Fix and clean
 def TreeKFoldReport(df, report_folder, clf):
+    '''
+    Use KFold cross validation over the dataset generating info in the report folder.
+
+    :param df: pandas.DataFrame with the dataset
+    :param report_folder: folder to save pics and report
+    :param clf: DecissionTreeClassifier
+    :return: clf full trained with the whole dataset
+    '''
 
     class_list, features, labels = unpackDF(df)
 
@@ -314,7 +324,17 @@ def TreeKFoldReport(df, report_folder, clf):
 
     return clf
 
-def plot_feature_importances(tree_classifier, X, X_names, nfeat=10, dimx=8, dimy=6):
+def plot_feature_importances(tree_classifier, feat_names, nfeat=10,  dimy=6, dimx=8,):
+    '''
+    Plot the nfeat more important features of the tree or random forest given.
+
+    :param tree_classifier: classifier DecissionTree or RandomForest
+    :param feat_names: The name of the features in the tree
+    :param nfeat: The number of top features to show
+    :param dimx: fig size x
+    :param dimy: fig size y
+    :return:
+    '''
     importances = tree_classifier.feature_importances_
     std = np.std([importances], axis=0) #Does nothing
     indices = importances.argsort()[-nfeat:][::-1]
@@ -331,7 +351,7 @@ def plot_feature_importances(tree_classifier, X, X_names, nfeat=10, dimx=8, dimy
     plt.title("Feature importances")
     plt.bar(range(nfeat), importances[indices],
             color="b", yerr=std[indices], align="center")
-    plt.xticks(range(nfeat), X_names[indices], rotation=45, size="x-small")
+    plt.xticks(range(nfeat), feat_names[indices], rotation=45)
     plt.xlim([-1, nfeat])
     plt.show()
 
@@ -351,16 +371,26 @@ def unpackDF(df):
     features = []
     for j in range(df.shape[0]):
         item = df.ix[j]
-        features.append([item[i] for i in range(len(item) - 1)])
+        features.append([item[i] for i in range(len(item))])
 
     return class_list, features, labels
 
-def KFoldAccuracy(df, clf):
+def KFoldAccuracy(df, clf, n_splits=5, random_state=1):
+    '''
+    Computes KFold cross validation accuracy using n_splits folds over the data in the pandas.DataFrame given.
+    Use an stratified KFold with the random_state specified.
+
+    :param df: pandas.DataFrame where is the data for train/test splits
+    :param clf: classifier with methods fit, predict and score
+    :param n_splits: number of splits
+    :param random_state: random state seed
+    :return: mean accuracy, std
+    '''
 
     _, features, labels = unpackDF(df)
 
     # Create object to split the dataset (in 5 at random but preserving percentage of each class)
-    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=1)
+    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
     # Split the dataset. The skf saves splits index
     skf.get_n_splits(features, labels)
 
