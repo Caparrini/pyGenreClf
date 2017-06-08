@@ -17,6 +17,11 @@ except ImportError:
 
 # Returns the best classifiers for faster experiments
 def bestClfs():
+    '''
+    This method return a list of the best classifiers used in the beatsdataset.csv
+
+    :return list: List of classifiers
+    '''
 
     DTC23 = tree.DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
             max_features=None, max_leaf_nodes=None,
@@ -53,14 +58,10 @@ def bestClfs():
     #10 0.694 +- 0.044 with gtzan.csv
 
 
-    ETC = ExtraTreesClassifier(bootstrap=True, criterion="gini",
-                               max_features=1, min_samples_leaf=2,
-                               min_samples_split=10, n_estimators=100)
+    #ETC = ExtraTreesClassifier(bootstrap=True, criterion="gini",max_features=1, min_samples_leaf=2,min_samples_split=10, n_estimators=100)
 
     # Accuracy 138 step 50 with BPM essentia (0.56260869565217386, 0.012251306785743798)
-    ETC = ExtraTreesClassifier(bootstrap=False, criterion="gini",
-                               max_features=0.5, min_samples_leaf=2,
-                               min_samples_split=10, n_estimators=100)
+    #ETC = ExtraTreesClassifier(bootstrap=False, criterion="gini",max_features=0.5, min_samples_leaf=2,min_samples_split=10, n_estimators=100)
 
     # Best with GTZAN
     #1 0.534 +- 0.01 with beatsdataset.csv
@@ -72,9 +73,7 @@ def bestClfs():
     #7 0.486 +- 0.024 with beatsdataset138-stStep50.csv
     #10 0.731 +- 0.021 with gtzan.csv
 
-    GBC = GradientBoostingClassifier(learning_rate=0.1, max_depth=6,
-                                     max_features=0.5, min_samples_leaf=13,
-                                     min_samples_split=6, subsample=0.8)
+    #GBC = GradientBoostingClassifier(learning_rate=0.1, max_depth=6,max_features=0.5, min_samples_leaf=13,min_samples_split=6, subsample=0.8)
 
     #1 0.556 +-0.016 with beatsdataset.csv SIN ESSENTIA BPM 0.48
     #2 0.477 +- 0.012 with beatsdataset1-1-01-005.csv
@@ -85,9 +84,7 @@ def bestClfs():
     #7 0.5 +- 0.02 with beatsdataset138-stStep50.csv CON ESSENTIA BPM 0.557, 0.017
     #10 0.722 +- 0.012 with gtzan.csv
 
-    XGB = XGBClassifier(learning_rate=0.1, max_depth=5,
-                        min_child_weight=6, nthread=4,
-                        subsample=0.55)
+    #XGB = XGBClassifier(learning_rate=0.1, max_depth=5,min_child_weight=6, nthread=4,subsample=0.55)
 
     clfs = [DTC23, RFC23, DTC7, RFC7]
     return clfs
@@ -96,10 +93,15 @@ def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
-    """
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting `normalize=True`.
-    """
+    '''
+    This function plots a confusion matrix
+
+    :param numpy.array cm: Confusion matrix
+    :param list classes: List of classes
+    :param boolean normalize: True to normalize
+    :param str title: Title of the plot
+    :param cmap: Colours
+    '''
     plt.imshow(cm, interpolation='nearest', cmap=cmap, vmax=sum(cm[0][:]))
     plt.title(title)
     plt.colorbar()
@@ -334,11 +336,18 @@ def plot_feature_importances(tree_classifier, X, X_names, nfeat=10, dimx=8, dimy
     plt.show()
 
 def unpackDF(df):
+    '''
+    Extract classes, features, and labels from a pandas.DataFrame
+
+    :param DataFrame df: pandas.DataFrame with the dataset
+    :return: Classes, features, labels
+    '''
     # List with the different labels
     class_list = list(df["class"].drop_duplicates())
     # List with all the labels (X)
     labels = list(df["class"].values)
     # List with the features (y)
+    df = df.drop(["class"],axis=1).reset_index(drop=True)
     features = []
     for j in range(df.shape[0]):
         item = df.ix[j]
