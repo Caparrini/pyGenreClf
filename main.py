@@ -27,7 +27,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="Examples of use")
     tasks = parser.add_subparsers(title="subcommands", description="available tasks", dest="task", metavar="")
 
-    featExt = tasks.add_parser("featureExtractionDataset", help="Extract audio features from file")
+    featExt = tasks.add_parser("featureExtractionDataset", help="Extract audio features from dataset folder")
     featExt.add_argument("-f", "--dataset_folder", required=True, help="Input structured folder with subfolders of audio files. Each subfolder is")
     featExt.add_argument("-o", "--output_DataFrame", required=True, help="Output file")
     featExt.add_argument("-mw", "--mtwin", type=float, default=1, help="Mid-term window size")
