@@ -49,8 +49,9 @@ class BaseOptimizer(object):
 
     def __init__(self, df):
         """
+
         :param df: (DataFrame) DataFrame to train and test the classifier 
-        (maybe in the future this must be change for features, labes list whis is more usual)
+        (maybe in the future this must be change for features, labels list which is more usual)
         """
         self.df = df
         self.params = self.getParams()
@@ -58,6 +59,7 @@ class BaseOptimizer(object):
     def initIndividual(self, pcls):
         """
         Method to initialize an individual instance
+
         :param pcls: Method to create the individual as an extension of the class list
         :return: individual
         """
@@ -81,6 +83,7 @@ class BaseOptimizer(object):
     def evaluateClf(self, individual):
         """
         Method to evaluate the individual, in this cases the classifier
+
         :param individual: individual for evaluation
         :return: mean accuracy, standard deviation accuracy
         """
@@ -206,6 +209,7 @@ class ForestOptimizer(TreeOptimizer):
     def getClf(self, individual):
         """
         Build a classifier object from an individual one
+
         :param individual: individual to create classifier
         :return: classifier sklearn.ensemble.RandomForestClassifier
         """
@@ -232,6 +236,7 @@ class ForestOptimizer(TreeOptimizer):
         """
         Params for the creation of individuals (relative to the algorithm)
         These params define the name of the param, min value, max value, and type
+
         :return: list of params
         """
         params = super(ForestOptimizer, self).getParams()
