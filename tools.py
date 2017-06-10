@@ -53,7 +53,12 @@ class ConfusionMatrixUtils(object):
     def recall(self,index):
         # TPR = TP / (TP + FN)
         dict = self.metrics_class[index]
-        return float(dict["TP"])/(dict["TP"]+dict["FN"])
+        try:
+            recall = float(dict["TP"])/(dict["TP"]+dict["FN"])
+        except ZeroDivisionError:
+            print("ERROR: TP+FN=0 (division by zero), recall can't be calculated.")
+            recall = -1
+        return recall
 
     # Specifity or true negative rate TNR
     def specificity(self,index):
@@ -65,7 +70,12 @@ class ConfusionMatrixUtils(object):
     def precision(self,index):
         # PPV = TP / (TP + FP)
         dict = self.metrics_class[index]
-        return float(dict["TP"])/(dict["TP"]+dict["FP"])
+        try:
+            precision = float(dict["TP"])/(dict["TP"]+dict["FP"])
+        except ZeroDivisionError:
+            print("ERROR: TP+FP=0 (division by zero), precision can't be calculated.")
+            precision = -1
+        return precision
 
     # Negative predictive value NPV
     def NPV(self,index):
@@ -92,7 +102,12 @@ class ConfusionMatrixUtils(object):
     def F1score(self,index):
         # 2TP / (2*TP + FP + FN)
         dict = self.metrics_class[index]
-        return float(2*dict["TP"])/(2*dict["TP"]+dict["FP"]+dict["FN"])
+        try:
+            f1s = float(2*dict["TP"])/(2*dict["TP"]+dict["FP"]+dict["FN"])
+        except ZeroDivisionError:
+            print("ERROR: TP=FP=FN=0 (division by zero), F1score can't be calculated.")
+            f1s = -1
+        return f1s
 
     # Matthews correlation coefficient
     def MCC(self,index):
