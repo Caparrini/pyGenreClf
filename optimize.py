@@ -13,6 +13,8 @@ class Param(object):
     """
     def __init__(self, name, minValue, maxValue, typeParam):
         """
+        Init object
+
         :param name: (str) Name of the param
         :param minValue: (int) Minimum value of the param
         :param maxValue: (int) Maximum value of the param
@@ -25,6 +27,7 @@ class Param(object):
 
     def correct(self, value):
         """
+
         :param value: value to verify if accomplishes type, min and max due to mutations
         :return: value fixed
         """
@@ -256,6 +259,7 @@ class ExtraTreesOptimizer(ForestOptimizer):
     def getClf(self, individual):
         """
         Build a classifier object from an individual one
+        
         :param individual: individual to create a classifier
         :return: classifier ExtraTreesClassifier
         """
