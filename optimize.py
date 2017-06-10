@@ -102,7 +102,13 @@ class BaseOptimizer(object):
         return mean,
 
     def optimizeClf(self, population=10, generations=3):
+        '''
+        Search through a genetic algorithm the best classifier
 
+        :param int population: Number of members of the first generation
+        :param int generations: Number of generations
+        :return: Trained classifier
+        '''
         print("Optimizing accuracy:\n")
         # Using deap, custom for decision tree
         creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -259,7 +265,7 @@ class ExtraTreesOptimizer(ForestOptimizer):
     def getClf(self, individual):
         """
         Build a classifier object from an individual one
-        
+
         :param individual: individual to create a classifier
         :return: classifier ExtraTreesClassifier
         """
