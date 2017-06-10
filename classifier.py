@@ -201,7 +201,7 @@ def KFoldCrossValidation(df, report_folder, clf):
 
     plt.figure()
     plot_confusion_matrix(cm_kfold_total, class_list, False, "Full test Confusion")
-    plt.savefig(report_folder + "cmkfolds.pdf")
+    plt.savefig(os.path.join(report_folder,"cmkfolds.pdf"))
 
     cmm = ConfusionMatrixUtils(cm_kfold_total, class_list)
     report.write(cmm.report() + "\n\n")
@@ -245,7 +245,7 @@ def TreeKFoldReport(df, report_folder, clf):
     kcounter = 0
 
     # Report file with useful information
-    report = open(report_folder + "report.txt", "w")
+    report = open(os.path.join(report_folder, "report.txt"), "w")
 
     # Iterate over the KFolds and do stuff
     for train_index, test_index in skf.split(features, labels):
@@ -287,13 +287,13 @@ def TreeKFoldReport(df, report_folder, clf):
         plt.figure()
 
         plot_confusion_matrix(cm_test, class_list, False, "Test Confusion")
-        plt.savefig(report_folder + "cmtest" + str(kcounter) + ".pdf")
+        plt.savefig(os.path.join(report_folder,"cmtest" + str(kcounter) + ".pdf"))
 
         """
         Ploting the train confusion for the train set"""
         plt.figure()
         plot_confusion_matrix(cm_train, class_list, False, "Train Confusion")
-        plt.savefig(report_folder + "cmtrain" + str(kcounter) + ".pdf")
+        plt.savefig(os.path.join(report_folder,"cmtrain" + str(kcounter) + ".pdf"))
 
         labels_kfold.extend(labels_test)
         labels_kfold_predicted.extend(labels_pred_test)
@@ -308,7 +308,7 @@ def TreeKFoldReport(df, report_folder, clf):
     cm_kfold_total = confusion_matrix(labels_kfold, labels_kfold_predicted)
     plt.figure()
     plot_confusion_matrix(cm_kfold_total, class_list, False, "Full test Confusion")
-    plt.savefig(report_folder + "cmkfolds.pdf")
+    plt.savefig(os.path.join(report_folder,"cmkfolds.pdf"))
 
     cmm = ConfusionMatrixUtils(cm_kfold_total, class_list)
     report.write(cmm.report() + "\n\n")
@@ -321,7 +321,7 @@ def TreeKFoldReport(df, report_folder, clf):
                                     filled=True, rounded=True,
                                     special_characters=True)
     graph = pydotplus.graph_from_dot_data(dot_data)
-    graph.write_pdf(report_folder + "FinalTree.pdf")
+    graph.write_pdf(os.path.join(report_folder,"FinalTree.pdf"))
 
     return clf
 
