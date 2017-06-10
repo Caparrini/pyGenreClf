@@ -45,7 +45,7 @@ python main.py predictClass -i AUDIO_FILE -clf miclasificador.pkl
 
 ## Licencia
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+Proyecto con licencia Apache License 2.0 [LICENSE.md](LICENSE.md)
 
 ## Acknowledgments
 
