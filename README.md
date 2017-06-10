@@ -1,31 +1,52 @@
-pyGenreClf!
-===================
-A python program for automatic genre clasification.
+# pyGenreClf
 
+pyGenreClf es una herramienta que permite crear un clasificador automático de géneros musicales. Forma parte de un trabajo de final de grado para el grado en ingeniería informática en la Universidad Complutense de Madrid.
+## Getting Started
 
-### UML diagrams
+A través de estás instrucciones llegaremos a una versión funcionando del proyecto.
 
-The actual project:
+### Requisitos
 
+Para poder ejecutar es necesario tener instalado Python 2.7 (https://www.python.org/downloads/).
 
-```flow
-au=>start: AudioSignal
-clf=>end: Classified
-fe=>operation: FeatureExtraction
-cond=>condition: Genre?
+En el caso de usuarios de windows recomendamos instalar anaconda (con la versión de Python 2.7) que empaqueta varias librerías necesarias (https://www.continuum.io/downloads).
 
-au->fe->cond
-cond()->clf
+### Instalando
+
+En primer lugar clonar el repositorio:
+```
+git clone https://github.com/Caparrini/pyGenreClf.git
+```
+Para poder utilizar correctamente el programa es necesario instalar las dependencias contenidas en el archivo requirements.txt, dentro de la carpeta del proyecto clonado. Ejecutar en consola dentro de la carpeta del proyecto:
+```
+pip install -r requirements.txt
 ```
 
-> **Note:** Initial readme:
+## Quick start
 
-> - Refactorize everything
-> - Complete work
+Para poder generar un clasificador el programa funcióna como un script y realizaremos los siguientes pasos.
+
+Extraer características:
+
+```
+python main.py featureExtraction -f CARPETA_DATOS -o midataset.csv
+```
+
+Conseguir el mejor árbol y generar un informe sobre el conjunto de datos utilizado para generarlo:
+```
+python main.py bestTreeClassifier -df midataset.csv -o miclasificador.pkl -f CARPETA_INFORME
+```
+
+Hacer predicciónes con el clasificador:
+```
+python main.py predictClass -i AUDIO_FILE -clf miclasificador.pkl
+```
 
 
-### Table of contents
+## Licencia
 
-You can insert a table of contents using the marker `[TOC]`:
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-[TOC]
+## Acknowledgments
+
+* https://github.com/tyiannak/pyAudioAnalysis
