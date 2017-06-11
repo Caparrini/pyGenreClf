@@ -3,7 +3,7 @@
 pyGenreClf es una herramienta que permite crear un clasificador automático de géneros musicales. Forma parte de un trabajo de final de grado para el grado en ingeniería informática en la Universidad Complutense de Madrid.
 ## Getting Started
 
-A través de estás instrucciones llegaremos a una versión funcionando del proyecto.
+A través de estás instrucciones llegaremos a una versión funcionando del proyecto. Además veremos una forma de crear un clasificador sobre cualquier conjunto de datos o utilizar uno de los creados por nosotros.
 
 ### Requisitos
 
@@ -24,9 +24,18 @@ pip install -r requirements.txt
 
 ## Quick start
 
+En la carpeta Examples/ se da un clasificador para los géneros de Beatport. Para utilizarlo y predecir el género de una canción necesitamos un archivo de audio de al menos 2 minutos de duración. A continuación con la ruta del archivo en una terminal en la carpeta del proyecto ejecutamos el siguiente comando:
+
+```
+python main.py predictClass -i AUDIO_FILE -clf Examples/beats23classifier.pkl
+```
+
+
+## Creando un clasificador
+
 Para poder generar un clasificador el programa funcióna como un script y realizaremos los siguientes pasos.
 
-Extraer características:
+Extraer características de un conjunto de datos en un archivo .csv. Para ello necesitamos una carpeta que contenga a su vez carpetas con archivos de audio. El nombre de las carpetas será el de las clases:
 
 ```
 python main.py featureExtraction -f CARPETA_DATOS -o midataset.csv
@@ -37,7 +46,7 @@ Conseguir el mejor árbol y generar un informe sobre el conjunto de datos utiliz
 python main.py bestTreeClassifier -df midataset.csv -o miclasificador.pkl -f CARPETA_INFORME
 ```
 
-Hacer predicciónes con el clasificador:
+Hacer predicciónes con el clasificador con el miclasificador.pkl que hemos creado anteriormente:
 ```
 python main.py predictClass -i AUDIO_FILE -clf miclasificador.pkl
 ```
