@@ -7,6 +7,7 @@ from abc import ABCMeta, abstractmethod
 import matplotlib.pyplot as plt
 from deap import base, creator, tools, algorithms
 
+
 class Param(object):
     """
     This class object saves the params to generalize the optimize class
@@ -85,7 +86,7 @@ class BaseOptimizer(object):
 
     def evaluateClf(self, individual):
         """
-        Method to evaluate the individual, in this cases the classifier
+        Method to evaluate the individual, in this case the classifier
 
         :param individual: individual for evaluation
         :return: mean accuracy, standard deviation accuracy
@@ -103,7 +104,7 @@ class BaseOptimizer(object):
 
     def optimizeClf(self, population=10, generations=3):
         '''
-        Search through a genetic algorithm the best classifier
+        Searches through a genetic algorithm the best classifier
 
         :param int population: Number of members of the first generation
         :param int generations: Number of generations
@@ -153,6 +154,11 @@ class BaseOptimizer(object):
         return self.getClf(hof[0])
 
     def plotLogbook(self, logbook):
+        '''
+        Plots the given loogboook
+
+        :param logbook: logbook of the genetic algorithm
+        '''
 
         gen = logbook.select("gen")
         fit_max = logbook.select("max")
@@ -217,7 +223,7 @@ class ForestOptimizer(TreeOptimizer):
     """
     def getClf(self, individual):
         """
-        Build a classifier object from an individual one
+        Builds a classifier object from an individual one
 
         :param individual: individual to create classifier
         :return: classifier sklearn.ensemble.RandomForestClassifier
@@ -264,7 +270,7 @@ class ExtraTreesOptimizer(ForestOptimizer):
     """
     def getClf(self, individual):
         """
-        Build a classifier object from an individual one
+        Builds a classifier object from an individual one
 
         :param individual: individual to create a classifier
         :return: classifier ExtraTreesClassifier
