@@ -14,6 +14,7 @@ class ExperimentUtils(object):
     def __init__(self, genres_folder, exp_folder):
         """
         Initialize the class
+
         :param genres_folder: Folder where is the subfolder with musical genres
         :param exp_folder: Folder to create the experiment
         """
@@ -72,8 +73,8 @@ class ExperimentUtils(object):
     def build_experiment(self, number_of_songs):
         """
         Creates the experiment folder at exp_folder path
+
         :param number_of_songs: Number of songs of each genre (half to train, half to test)
-        :return: Nothing
         """
         dftest, dftrain = self._generate_full_alias_dataframes(n_songs=number_of_songs)  # Get names DataFrames
         os.mkdir(self.exp_folder)  # Create main exp folder
@@ -109,7 +110,6 @@ class ExperimentUtils(object):
         """
         Evaluates the performance in the experiment given the saved .CSV test file with the alias and the folder test
         modified by the subjects. This evaluation is shown as a confusion_matrix
-        :return: Nothing
         """
         dftest = pd.DataFrame.from_csv(os.path.join(self.exp_folder, "evaluation", "test_songs.csv"))
         dfeval = self.get_evaluation_df(os.path.join(self.exp_folder, "test"))
@@ -120,8 +120,6 @@ class ExperimentUtils(object):
         cm = confusion_matrix(labels, pred_labels, self.genres_dict.keys())
         print(cm)
         return cm
-        # TODO to improve show results
-        # TODO option for save more than one result
 
     def get_evaluation_df(self, test_folder):
         dfeval = pd.DataFrame()
