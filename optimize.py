@@ -207,7 +207,7 @@ class TreeOptimizer(BaseOptimizer):
         """
         Params for the creation of individuals (relative to the algorithm)
         These params define the name of the param, min value, max value, and type
-        
+
         :return: list of params
         """
         params = []
