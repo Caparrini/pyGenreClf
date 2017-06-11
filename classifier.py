@@ -128,12 +128,12 @@ def plot_confusion_matrix(cm, classes,
 def KFoldCrossValidation(df, report_folder, clf):
     '''
     Generates a report using KFold cross validation.
-    It generate train/test cm for each kfold, a final kfold with all the test splits and a report.txt with metrics and
-    other data.
+    It generate train/test confusion matrix for each kfold, a final kfold with all the test splits
+    and a report.txt with metrics and other data.
 
-    :param df: pandas.DataFrame with the dataset
-    :param report_folder: folder where save pics and report
-    :param clf: classifier with methods fit, score and predict
+    :param pandas.DataFrame df: DataFrame with the dataset
+    :param str report_folder: folder where save pics and report
+    :param clf: classifier with methods fit, score and predict sklearn styled
     :return: clf trained with all the data
     '''
 
@@ -210,13 +210,15 @@ def KFoldCrossValidation(df, report_folder, clf):
 
     return clf
 
-def TreeKFoldReport(df, report_folder, clf):
+def TreeKFoldReport(df, report_folder, clf, n_splits=5, random_state=1):
     '''
-    Use KFold cross validation over the dataset generating info in the report folder.
+    Uses KFold cross validation over the dataset generating info in the report folder.
 
     :param df: pandas.DataFrame with the dataset
     :param report_folder: folder to save pics and report
     :param clf: DecissionTreeClassifier
+    :param int n_splits: Number of kfolds
+    :param float random:state: Random state seed
     :return: clf full trained with the whole dataset
     '''
 
@@ -226,7 +228,7 @@ def TreeKFoldReport(df, report_folder, clf):
     features_names_full = list(df.columns.values[:-1])
 
     # Create object to split the dataset (in 5 at random but preserving percentage of each class)
-    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=1)
+    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_state)
     # Split the dataset. The skf saves splits index
     skf.get_n_splits(features, labels)
 
@@ -327,14 +329,13 @@ def TreeKFoldReport(df, report_folder, clf):
 
 def plot_feature_importances(tree_classifier, feat_names, nfeat=10,  dimy=6, dimx=8,):
     '''
-    Plot the nfeat more important features of the tree or random forest given.
+    Plots the nfeat more important features of the tree or random forest given.
 
     :param tree_classifier: classifier DecissionTree or RandomForest
     :param feat_names: The name of the features in the tree
     :param nfeat: The number of top features to show
     :param dimx: fig size x
     :param dimy: fig size y
-    :return:
     '''
     importances = tree_classifier.feature_importances_
     std = np.std([importances], axis=0) #Does nothing
@@ -358,7 +359,9 @@ def plot_feature_importances(tree_classifier, feat_names, nfeat=10,  dimy=6, dim
 
 def unpackDF(df):
     '''
-    Extract classes, features, and labels from a pandas.DataFrame
+    Extract classes, features, and labels from a pandas.DataFrame.
+    One column of the DataFrame should be called "class" and
+    the rest are features.
 
     :param DataFrame df: pandas.DataFrame with the dataset
     :return: Classes, features, labels
@@ -379,7 +382,7 @@ def unpackDF(df):
 def KFoldAccuracy(df, clf, n_splits=5, random_state=1):
     '''
     Computes KFold cross validation accuracy using n_splits folds over the data in the pandas.DataFrame given.
-    Use an stratified KFold with the random_state specified.
+    Uses an stratified KFold with the random_state specified.
 
     :param df: pandas.DataFrame where is the data for train/test splits
     :param clf: classifier with methods fit, predict and score
