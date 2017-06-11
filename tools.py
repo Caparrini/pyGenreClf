@@ -21,11 +21,11 @@ def songs_to_wav():
                 '" -acodec pcm_s16le -ar 22050 -ac 1 "' + ruta + '.wav"')
                 os.remove(ruta)
 
-#TODO care with zero at the denominator
+
 class ConfusionMatrixUtils(object):
     """
     Class object to generate and save the metrics of the confusion matrix.
-    In creation it builds a list of dictionaries with the TP,TN,FP,FN of the cm.
+    Whe it is created it builds a list of dictionaries with the TP,TN,FP,FN of the cm.
     Summoning each function calculate the asked metric.
 
     cm : confusion matrix (equal rows and columns)
@@ -36,8 +36,11 @@ class ConfusionMatrixUtils(object):
         self.class_names = class_names
         self.generateMetrics()
 
-    # It generates the basic metrics for each class (TP,FP,TN,FN)
     def generateMetrics(self):
+        '''
+        It generates the basic metrics for each class (TP,FP,TN,FN)
+
+        '''
         self.metrics_class = []
         for i in range(self.cm.shape[0]):
             metrics = {}
@@ -49,9 +52,14 @@ class ConfusionMatrixUtils(object):
             metrics["FN"] = sum(self.cm[i,[j for j in range(self.cm.shape[1]) if j!=i]])
             self.metrics_class.append(metrics)
 
-    # Sensitivity, recall, hit rate or true positive rate(TPR)
     def recall(self,index):
-        # TPR = TP / (TP + FN)
+        '''
+        Sensitivity, recall, hit rate or true positive rate(TPR)
+        TPR = TP / (TP + FN)
+
+        :param index: index of the class
+        :return: recall or -1 if it can not be calculated
+        '''
         dict = self.metrics_class[index]
         try:
             recall = float(dict["TP"])/(dict["TP"]+dict["FN"])
@@ -66,9 +74,14 @@ class ConfusionMatrixUtils(object):
         dict = self.metrics_class[index]
         return float(dict["TN"])/(dict["TN"]+dict["FP"])
 
-    # Precision or positive predictive value PPV
     def precision(self,index):
-        # PPV = TP / (TP + FP)
+        '''
+        Precision or positive predictive value PPV
+        PPV = TP / (TP + FP)
+
+        :param index: index of the class
+        :return: precision or -1 if it can not be calculated
+        '''
         dict = self.metrics_class[index]
         try:
             precision = float(dict["TP"])/(dict["TP"]+dict["FP"])
@@ -98,9 +111,14 @@ class ConfusionMatrixUtils(object):
         dict = self.metrics_class[index]
         return float(dict["TP"]+dict["TN"]) / (dict["FN"]+dict["TP"]+dict["FP"]+dict["TN"])
 
-    # Harmonic mean of precision and sensitivity
     def F1score(self,index):
-        # 2TP / (2*TP + FP + FN)
+        '''
+        Harmonic mean of precision and sensitivity
+        2TP / (2*TP + FP + FN)
+
+        :param index: index of the class
+        :return: f1score or -1 if it can not be calculated
+        '''
         dict = self.metrics_class[index]
         try:
             f1s = float(2*dict["TP"])/(2*dict["TP"]+dict["FP"]+dict["FN"])
@@ -126,6 +144,12 @@ class ConfusionMatrixUtils(object):
         return self.precision(index)+self.NPV(index)-1
 
     def report(self):
+        '''
+        Generates a string as a report given all the class names,
+        recall, precision and f1 score.
+
+        :return str: report
+        '''
         r = "Confusion Matrix Metrics Report\n\n"
         for i in range(len(self.class_names)):
             r+= self.class_names[i]+":\n\t"
@@ -134,8 +158,12 @@ class ConfusionMatrixUtils(object):
                 " F1score: " + str(round(self.F1score(i), 2)) +"\n"
         return r
 
-    # Transforms the current cmm into a graph
     def cmmToGraph(self):
+        '''
+        Transforms the current cm into a graph
+
+        :return networkx.DiGraph: confusion graph
+        '''
         G = nx.DiGraph()
 
         # Add node for each class_name with weight equal to
