@@ -185,6 +185,7 @@ class TreeOptimizer(BaseOptimizer):
     def getClf(self, individual):
         """
         Build a classifier object from an individual one
+
         :param individual: individual to create classifier
         :return: classifier sklearn.tree.DecisionTreeClassifier
         """
@@ -206,6 +207,7 @@ class TreeOptimizer(BaseOptimizer):
         """
         Params for the creation of individuals (relative to the algorithm)
         These params define the name of the param, min value, max value, and type
+        
         :return: list of params
         """
         params = []
