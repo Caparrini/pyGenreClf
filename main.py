@@ -35,7 +35,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description="Examples of use")
     tasks = parser.add_subparsers(title="subcommands", description="available tasks", dest="task", metavar="")
 
-    featExt = tasks.add_parser("featureExtractionDataset", help="Extract audio features from dataset folder")
+    featExt = tasks.add_parser("featureExtractionDataset", help="Extracts audio features from dataset folder")
     featExt.add_argument("-f", "--dataset_folder", required=True, help="Input structured folder with subfolders of audio files. Each subfolder is")
     featExt.add_argument("-o", "--output_DataFrame", required=True, help="Output file")
     featExt.add_argument("-mw", "--mtwin", type=float, default=1, help="Mid-term window size")
@@ -43,21 +43,21 @@ def parse_arguments():
     featExt.add_argument("-sw", "--stwin", type=float, default=0.050, help="Short-term window size")
     featExt.add_argument("-ss", "--ststep", type=float, default=0.050, help="Short-term window step")
 
-    bestForestClf = tasks.add_parser("bestForestClassifier", help="Generate the best random forest classifier and generates a report")
+    bestForestClf = tasks.add_parser("bestForestClassifier", help="Generates the best random forest classifier and generates a report")
     bestForestClf.add_argument("-df", "--DataFrame", required=True, help="Input pandas.DataFrame dataset")
     bestForestClf.add_argument("-o", "--clf_file", required=True, help="Generated binary classifier file")
     bestForestClf.add_argument("-f", "--report_folder", required=True, help="Folder to save all the report data")
     bestForestClf.add_argument("-p", "--population", type=int, default=30, help="Initial population for genetic algorithm")
     bestForestClf.add_argument("-g", "--generations", type=int, default=50, help="Number of generations")
 
-    bestTreeClf = tasks.add_parser("bestTreeClassifier", help="Generate the best decission tree classifier and generates a report")
+    bestTreeClf = tasks.add_parser("bestTreeClassifier", help="Generates the best decission tree classifier and generates a report")
     bestTreeClf.add_argument("-df", "--DataFrame", required=True, help="Input pandas.DataFrame dataset")
     bestTreeClf.add_argument("-o", "--clf_file", required=True, help="Generated binary classifier file")
     bestTreeClf.add_argument("-f", "--report_folder", required=True, help="Folder to save all the report data")
     bestTreeClf.add_argument("-p", "--population", type=int, default=30, help="Initial population for genetic algorithm")
     bestTreeClf.add_argument("-g", "--generations", type=int, default=50, help="Number of generations")
 
-    predictClass = tasks.add_parser("predictClass", help="Predict the class of the given audio file or address")
+    predictClass = tasks.add_parser("predictClass", help="Predicts the class of the given audio file or address")
     predictClass.add_argument("-i", "--input", required=True, help="Audio filename")
     predictClass.add_argument("-clf", "--classifier", required=True, help="Classifier filename")
 
