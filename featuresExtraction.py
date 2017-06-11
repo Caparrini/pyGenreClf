@@ -82,7 +82,7 @@ def query_yes_no(question, default="yes"):
 def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/Capa/Datasets/beatsdataset/",
                     mtWin=1, mtStep=1, stWin=0.05, stStep=0.05):
     """
-    This method extract the pyAudioAnalysis features from all the dataset given and it saves them in a .csv file using
+    This method extracts the pyAudioAnalysis features from all the dataset given and it saves them in a .csv file using
     pandas.
 
     :param str dataset_csv: File to write the dataset extraction of features
@@ -91,7 +91,7 @@ def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/C
     :param float mtStep: Size of the step of the analysis mid term window
     :param float stWin: Size of the short term analysis window
     :param float stStep: Size of the step of the analysis short term window
-    :return DataFrame: DataFrame object with features and labels of the dataset
+    :return pandas.DataFrame: DataFrame object with features and labels of the dataset
     """
     genre_list = [x for x in os.walk(dataset_folder)][0][1] # The class folder names inside the dataset folder
 
@@ -150,10 +150,10 @@ def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/C
 
 def dirsExtractBPM(dataset_folder):
     '''
-    Folder with subfolder to extract all the BPMs
+    Folder with sub-folder to extract all the BPMs
 
-    :param str dataset_folder: Folder with folder of audiofiles
-    :return list: List ob BPMs of all the songs in the folder subfolders
+    :param str dataset_folder: Folder with folder of audio files
+    :return list: List ob BPMs of all the songs in the sub-folders
     '''
     BPMs = [] # features
     genre_list = [x for x in os.walk(dataset_folder)][0][1]
@@ -213,7 +213,7 @@ def extractFeatures(Fs, x, mtWin, mtStep, stWin, stStep):
     Extract 71 feature of a singe audio file where x are the sample and Fs the frequency rate.
 
     :param Fs: Frequency rate of the audio file
-    :param x: Listo of samples
+    :param x: List of samples
     :param float mtWin: Mid-Term analysis window
     :param float mtStep: Mid-Term step
     :param float stWin: Short-Term analysis window
@@ -240,17 +240,18 @@ def extractFeaturesFolder(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/U
                     mtWin=1, mtStep=1, stWin=0.05, stStep=0.05):
     '''
     MAIN METHOD.
-    Extract 71 audio features from every audio file in the dataset_folder.
-    Write the result in the dataset_csv file which is a pandas DataFrame.
-    The dataset_folder must have audio files classified in subfolders.
+    Extracts 71 audio features from every audio file in the dataset_folder.
+    Write the result in the dataset_csv file which is a pandas.DataFrame.
+    The dataset_folder must have audio files classified in sub-folders and
+    the name of the class is the name of the sub-folder which contains them.
 
-    :param str dataset_csv: File to write the pandas.DataFrame resulting
-    :param str dataset_folder: Folder with the audio samples to extract features.
+    :param str dataset_csv: File to write the pandas.DataFrame with features and labels
+    :param str dataset_folder: Folder with the audio samples to extract features from them
     :param float mtWin: Size of mid term analysis windows
     :param float mtStep: Step of mid term analysis windows
     :param float stWin: Size of short term analysis windows
     :param float stStep: Step of short term analysis windows
-    :return: DataFrame with the classes and 71 features
+    :return: DataFrame with the classes and 71 features for each audio file
     '''
     if(not os.path.exists(dataset_folder)): # Error if the folder given does not exist
         print("The dataset folder : " + dataset_folder + " does not exist.\n")
