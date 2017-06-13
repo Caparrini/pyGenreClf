@@ -440,7 +440,7 @@ def KFoldAccuracy(df, clf, n_splits=5, random_state=1):
 
 def predictGenre(song_file_name, clf_pkl=os.path.join(os.path.dirname(__file__),'Examples','beats23classifier.pkl')):
     '''
-    Receives an audio file route and a binary classifier and returns the genere of the song in a string
+    Receives an audio file route and a binary classifier and returns the genre of the song in a string
 
     :param str song_file_name: audio file route
     :param str clf_pkl: binary classifier route
