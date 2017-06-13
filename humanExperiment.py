@@ -151,7 +151,7 @@ class ExperimentUtils(object):
 
         labels = dffinal["class"]  # Real class
         pred_labels = dffinal["pred_class"]  # Predicted class
-        cm = confusion_matrix(labels, pred_labels, self.genres_dict.keys())
+        cm = confusion_matrix(labels, pred_labels, sorted(self.genres_dict.keys()))
         print(cm)
         print(accuracies)
         print(np.mean(accuracies))
