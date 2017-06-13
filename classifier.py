@@ -8,6 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import itertools
 import os
+import joblib
+import librosa
+from featuresExtraction import extractFeatures
 try:
     from xgboost import XGBClassifier
 except ImportError:
@@ -434,3 +437,18 @@ def KFoldAccuracy(df, clf, n_splits=5, random_state=1):
     std = np.std(accuracies_kfold)
 
     return meanAccuracy, std
+
+def predictGenre(song_file_name, clf_pkl=os.path.join(os.path.dirname(__file__),'Examples','beats23classifier.pkl')):
+    '''
+    Receives an audio file route and a binary classifier and returns the genere of the song in a string
+
+    :param str song_file_name: audio file route
+    :param str clf_pkl: binary classifier route
+    :return: genre of the song using the classifier given or the default beatport classifier
+    '''
+    clf = joblib.load(clf_pkl)
+    x, Fs = librosa.load(song_file_name)
+    x = librosa.resample(x, Fs, 22050)
+    x = librosa.to_mono(x)
+    feats = extractFeatures(22050, x[:22050 * 120], 1, 1, 0.05, 0.05)
+    return clf.predict([feats])[0]

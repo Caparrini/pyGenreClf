@@ -1,10 +1,9 @@
 import pandas as pd
-import librosa
 import argparse
 import joblib
-from featuresExtraction import extractFeaturesFolder, extractFeatures
+from featuresExtraction import extractFeaturesFolder
 from optimize import ForestOptimizer, TreeOptimizer
-from classifier import KFoldCrossValidation, TreeKFoldReport
+from classifier import KFoldCrossValidation, TreeKFoldReport, predictGenre
 
 def main():
     args = parse_arguments()
@@ -24,12 +23,7 @@ def main():
         clf = TreeKFoldReport(df, args.report_folder, clf)
         joblib.dump(clf, args.clf_file)
     elif args.task == "predictClass":
-        clf = joblib.load(args.classifier)
-        x, Fs = librosa.load(args.input)
-        x = librosa.resample(x, Fs, 22050)
-        x = librosa.to_mono(x)
-        feats = extractFeatures(22050, x[:22050 * 120], 1, 1, 0.05, 0.05)
-        print(clf.predict([feats]))
+        print(predictGenre(args.input, args.classifier))
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Examples of use")
