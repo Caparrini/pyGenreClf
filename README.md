@@ -1,11 +1,11 @@
 # pyGenreClf
 
 pyGenreClf es una herramienta que permite crear un clasificador automático de géneros musicales. Forma parte de un trabajo de final de grado para el grado en ingeniería informática de la Universidad Complutense de Madrid.
-## Getting Started
+### Getting Started
 
 A través de estás instrucciones llegaremos a una versión funcionando del proyecto. Además veremos una forma de crear un clasificador sobre cualquier conjunto de datos o utilizar uno de los creados por nosotros en este proyecto.
 
-### Requisitos
+## Requisitos
 
 Para poder ejecutar es necesario tener instalado Python 2.7 (https://www.python.org/downloads/).
 
@@ -23,7 +23,7 @@ Instalar Essentia: https://github.com/MTG/essentia/tree/master/
 
 (Sí no puedes instalar Essentia, se utilizará otra librería alternativamente en su lugar, por lo que puedes continuar sin instalar Essentia)
 
-### Instalando
+## Instalando
 
 En primer lugar clonar el repositorio:
 ```
@@ -34,7 +34,7 @@ Para poder utilizar correctamente el programa es necesario instalar las dependen
 pip install -r requirements.txt
 ```
 
-## Quick start
+### Quick start
 
 En la carpeta Examples/ se da un clasificador para los géneros de Beatport. Para utilizarlo y predecir el género de una canción necesitamos un archivo de audio de al menos 2 minutos de duración. A continuación  dentro de la carpeta del proyecto y con la ruta del archivo (AUDIO_FILE) ejecutamos el siguiente comando:
 
@@ -64,10 +64,10 @@ python main.py predictClass -i AUDIO_FILE -clf miclasificador.pkl
 ```
 
 
-## Licencia
+### Licencia
 
 Proyecto con licencia Apache License 2.0 [LICENSE.md](LICENSE.md)
 
-## Acknowledgments
+### Acknowledgments
 
 * https://github.com/tyiannak/pyAudioAnalysis
