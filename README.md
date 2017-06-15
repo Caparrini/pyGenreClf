@@ -11,6 +11,18 @@ Para poder ejecutar es necesario tener instalado Python 2.7 (https://www.python.
 
 En el caso de usuarios de Windows recomendamos instalar anaconda (con la versión de Python 2.7) que empaqueta varias librerías necesarias (https://www.continuum.io/downloads).
 
+## Instalando dependencias en Ubuntu
+
+Instalar los siguientes paquetes con el gestor usando el siguiente comando en consola (pedirá la contraseña de administrador):
+
+```
+sudo apt-get install python-tk python-dev graphviz bibgraphviz-dev pkg-config
+```
+
+Instalar Essentia: https://github.com/MTG/essentia/tree/master/
+
+(Sí no puedes instalar Essentia, se utilizará otra librería alternativamente en su lugar, por lo que puedes continuar sin instalar Essentia)
+
 ### Instalando
 
 En primer lugar clonar el repositorio:
