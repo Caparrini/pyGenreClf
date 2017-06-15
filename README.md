@@ -21,7 +21,7 @@ sudo apt-get install python-tk python-dev graphviz bibgraphviz-dev pkg-config
 
 Instalar Essentia: https://github.com/MTG/essentia/tree/master/
 
-(Sí no puedes instalar Essentia, se utilizará otra librería alternativamente en su lugar, por lo que puedes continuar sin instalar Essentia)
+(Sí no puedes instalar Essentia, se utilizará otra librería alternativa en su lugar, por lo que puedes continuar sin instalarla)
 
 ## Instalando
 
