@@ -1,0 +1,504 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>featuresExtraction &mdash; pyGenreClf 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="pyGenreClf 1 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pyGenreClf
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introducción: pyGenreClf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scriptfuns.html">Uso del script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">pyGenreClf</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyGenreClf</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>featuresExtraction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for featuresExtraction</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="k">import</span> <span class="n">wavfile</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">from</span> <span class="nn">pyAudioAnalysis</span> <span class="k">import</span> <span class="n">audioFeatureExtraction</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">librosa.beat</span> <span class="k">import</span> <span class="n">beat_track</span>
+<span class="kn">import</span> <span class="nn">librosa</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">essentia.standard</span>
+    <span class="kn">from</span> <span class="nn">essentia.standard</span> <span class="k">import</span> <span class="o">*</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Essentia not installed!&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="create_fft"><a class="viewcode-back" href="../featuresExtraction.html#featuresExtraction.create_fft">[docs]</a><span class="k">def</span> <span class="nf">create_fft</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+    <span class="n">sample_rate</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">fft_features</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">X</span><span class="p">)[:</span><span class="mi">1000</span><span class="p">])</span>
+    <span class="n">base_fn</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+    <span class="n">data_fn</span> <span class="o">=</span> <span class="n">base_fn</span> <span class="o">+</span> <span class="s2">&quot;.fft&quot;</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">data_fn</span><span class="p">,</span> <span class="n">fft_features</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="dataset_fft"><a class="viewcode-back" href="../featuresExtraction.html#featuresExtraction.dataset_fft">[docs]</a><span class="k">def</span> <span class="nf">dataset_fft</span><span class="p">():</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;genres/&quot;</span><span class="p">)</span>
+    <span class="n">genre_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)]</span>
+    <span class="n">genre_folders</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">genre_folders</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">ruta</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">s</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">ruta</span><span class="p">)</span>
+            <span class="n">create_fft</span><span class="p">(</span><span class="n">ruta</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="read_fft"><a class="viewcode-back" href="../featuresExtraction.html#featuresExtraction.read_fft">[docs]</a><span class="k">def</span> <span class="nf">read_fft</span><span class="p">():</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;genres/&quot;</span><span class="p">)</span>
+    <span class="n">genre_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)]</span>
+    <span class="n">genre_folders</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">genre_folders</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">if</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span><span class="o">==</span><span class="s2">&quot;npy&quot;</span><span class="p">:</span>
+                <span class="n">ruta</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">s</span>
+                <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ruta</span><span class="p">))</span>
+                <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="n">features</span><span class="p">,</span> <span class="n">labels</span></div>
+
+<div class="viewcode-block" id="query_yes_no"><a class="viewcode-back" href="../featuresExtraction.html#featuresExtraction.query_yes_no">[docs]</a><span class="k">def</span> <span class="nf">query_yes_no</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Ask a yes/no question via raw_input() and return their answer.</span>
+
+<span class="sd">    &quot;question&quot; is a string that is presented to the user.</span>
+<span class="sd">    &quot;default&quot; is the presumed answer if the user just hits &lt;Enter&gt;.</span>
+<span class="sd">        It must be &quot;yes&quot; (the default), &quot;no&quot; or None (meaning</span>
+<span class="sd">        an answer is required of the user).</span>
+
+<span class="sd">    The &quot;answer&quot; return value is True for &quot;yes&quot; or False for &quot;no&quot;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">valid</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;yes&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;ye&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+             <span class="s2">&quot;no&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot; [y/n] &quot;</span>
+    <span class="k">elif</span> <span class="n">default</span> <span class="o">==</span> <span class="s2">&quot;yes&quot;</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot; [Y/n] &quot;</span>
+    <span class="k">elif</span> <span class="n">default</span> <span class="o">==</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="s2">&quot; [y/N] &quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;invalid default answer: &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">default</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">question</span> <span class="o">+</span> <span class="n">prompt</span><span class="p">)</span>
+        <span class="n">choice</span> <span class="o">=</span> <span class="n">raw_input</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">choice</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">valid</span><span class="p">[</span><span class="n">default</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">valid</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">valid</span><span class="p">[</span><span class="n">choice</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Please respond with &#39;yes&#39; or &#39;no&#39; &quot;</span>
+                             <span class="s2">&quot;(or &#39;y&#39; or &#39;n&#39;).</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="pyAudioFeatures"><a class="viewcode-back" href="../featuresExtraction.html#featuresExtraction.pyAudioFeatures">[docs]</a><span class="k">def</span> <span class="nf">pyAudioFeatures</span><span class="p">(</span><span class="n">dataset_csv</span><span class="o">=</span><span class="s2">&quot;CSV/beatsdataset.csv&quot;</span><span class="p">,</span> <span class="n">dataset_folder</span><span class="o">=</span><span class="s2">&quot;/Users/Capa/Datasets/beatsdataset/&quot;</span><span class="p">,</span>
+                    <span class="n">mtWin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mtStep</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stWin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">stStep</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This method extracts the pyAudioAnalysis features from all the dataset given and it saves them in a .csv file using</span>
+<span class="sd">    pandas.</span>
+
+<span class="sd">    :param str dataset_csv: File to write the dataset extraction of features</span>
+<span class="sd">    :param str dataset_folder: Folder containing the dataset, with one folder for each class</span>
+<span class="sd">    :param float mtWin: Size of the mid term analysis window</span>
+<span class="sd">    :param float mtStep: Size of the step of the analysis mid term window</span>
+<span class="sd">    :param float stWin: Size of the short term analysis window</span>
+<span class="sd">    :param float stStep: Size of the step of the analysis short term window</span>
+<span class="sd">    :return pandas.DataFrame: DataFrame object with features and labels of the dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">genre_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">dataset_folder</span><span class="p">)][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># The class folder names inside the dataset folder</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dataset_folder</span><span class="p">)):</span> <span class="c1"># Error if the folder given does not exist</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The dataset folder : &quot;</span> <span class="o">+</span> <span class="n">dataset_folder</span> <span class="o">+</span> <span class="s2">&quot; does not exist.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dataset_csv</span><span class="p">)):</span>    <span class="c1"># If the .csv file exist, ask if the user wants to overwrite it</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The dataset_csv file already exists.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">query_yes_no</span><span class="p">(</span><span class="s2">&quot;Do you want to overwrite it?&quot;</span><span class="p">)):</span>
+            <span class="k">return</span>
+
+    <span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset_folder</span> <span class="o">+</span> <span class="n">f</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">genre_list</span><span class="p">]</span>   <span class="c1"># The class folder full address</span>
+    <span class="p">[</span><span class="n">featuresTotal</span><span class="p">,</span> <span class="n">labelsTotal</span><span class="p">,</span> <span class="n">_</span><span class="p">]</span> <span class="o">=</span> <span class="n">audioFeatureExtraction</span><span class="o">.</span><span class="n">dirsWavFeatureExtraction</span><span class="p">(</span><span class="n">dirs</span><span class="p">,</span> <span class="n">mtWin</span><span class="p">,</span> <span class="n">mtStep</span><span class="p">,</span> <span class="n">stWin</span><span class="p">,</span> <span class="n">stStep</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># Using pyAudioAnalysis library</span>
+
+    <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># Features list</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># Labels list</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">genre_list</span><span class="p">)):</span> <span class="c1"># Filling features and labels with the result of audioFeatureExtraction.dirsWavFeatureExtraction()</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">featuresTotal</span><span class="p">[</span><span class="n">i</span><span class="p">])):</span>
+            <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">featuresTotal</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">ii</span><span class="p">])</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">labelsTotal</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">features</span><span class="p">)</span> <span class="c1"># Generate DataFrame with the features</span>
+
+    <span class="n">features_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ZCR&quot;</span><span class="p">,</span> <span class="s2">&quot;Energy&quot;</span><span class="p">,</span> <span class="s2">&quot;EnergyEntropy&quot;</span><span class="p">,</span> <span class="s2">&quot;SpectralCentroid&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;SpectralSpread&quot;</span><span class="p">,</span> <span class="s2">&quot;SpectralEntropy&quot;</span><span class="p">,</span> <span class="s2">&quot;SpectralFlux&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;SpectralRolloff&quot;</span><span class="p">,</span> <span class="s2">&quot;MFCCs&quot;</span><span class="p">,</span> <span class="s2">&quot;ChromaVector&quot;</span><span class="p">,</span> <span class="s2">&quot;ChromaDeviation&quot;</span><span class="p">]</span>
+
+    <span class="n">features_names_full</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="mi">70</span><span class="p">):</span>    <span class="c1"># pyAudioAnalysis gets 70 features</span>
+        <span class="n">features_metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>                   <span class="c1"># if using pyAudioAnalysis modified which gives skews and kurts</span>
+        <span class="n">features_metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;skew&quot;</span><span class="p">,</span> <span class="s2">&quot;kurt&quot;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features_metrics</span><span class="p">)):</span> <span class="c1"># Generate the names for the features</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">j</span> <span class="o">*</span> <span class="mi">34</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">):</span>
+            <span class="n">features_names_full</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">features_names</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">features_metrics</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">22</span><span class="p">):</span>
+            <span class="n">features_names_full</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">features_names</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">8</span><span class="p">)</span> <span class="o">+</span> <span class="n">features_metrics</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mi">34</span><span class="p">):</span>
+            <span class="n">features_names_full</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">features_names</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">21</span><span class="p">)</span> <span class="o">+</span> <span class="n">features_metrics</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">features_names_full</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="mi">34</span> <span class="o">+</span> <span class="n">offset</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">features_names</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="n">features_metrics</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+    <span class="n">features_names_full</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features_metrics</span><span class="p">)</span><span class="o">*</span><span class="mi">34</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;-BPM&quot;</span><span class="p">)</span>
+    <span class="n">features_names_full</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features_metrics</span><span class="p">)</span><span class="o">*</span><span class="mi">34</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;-BPMconf&quot;</span><span class="p">)</span>
+
+    <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">features_names_full</span> <span class="c1"># Added the features names to the DataFrame object</span>
+
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>    <span class="c1"># Finally added the class column</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">dataset_csv</span><span class="p">)</span> <span class="c1"># Export the DataFrame to a .csv file for easy import later</span>
+
+    <span class="k">return</span> <span class="n">df</span> <span class="c1"># And return the DataFrame</span></div>
+
+<div class="viewcode-block" id="dirsExtractBPM"><a class="viewcode-back" href="../featuresExtraction.html#featuresExtraction.dirsExtractBPM">[docs]</a><span class="k">def</span> <span class="nf">dirsExtractBPM</span><span class="p">(</span><span class="n">dataset_folder</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Folder with sub-folder to extract all the BPMs</span>
+
+<span class="sd">    :param str dataset_folder: Folder with folder of audio files</span>
+<span class="sd">    :return list: List ob BPMs of all the songs in the sub-folders</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">BPMs</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># features</span>
+    <span class="n">genre_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">dataset_folder</span><span class="p">)][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_folder</span><span class="p">,</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">genre_list</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+        <span class="n">BPMs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">dirExtractBPM</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">BPMs</span></div>
+
+<div class="viewcode-block" id="dirExtractBPM"><a class="viewcode-back" href="../featuresExtraction.html#featuresExtraction.dirExtractBPM">[docs]</a><span class="k">def</span> <span class="nf">dirExtractBPM</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generate a list of BPM of each song in the given folder</span>
+
+<span class="sd">    :param str folder: Folder with audio file to extract BPMs</span>
+<span class="sd">    :return list: List of BPMs of every song in the folder</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">BPMs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">types</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;*.wav&#39;</span><span class="p">,</span> <span class="s1">&#39;*.aif&#39;</span><span class="p">,</span> <span class="s1">&#39;*.mp3&#39;</span><span class="p">,</span> <span class="s1">&#39;*.au&#39;</span><span class="p">,</span> <span class="s1">&#39;*.aiff&#39;</span><span class="p">,</span> <span class="s1">&#39;*.flac&#39;</span><span class="p">)</span>
+    <span class="n">audioFiles</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+        <span class="n">audioFiles</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">files</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">audioFile</span> <span class="ow">in</span> <span class="n">audioFiles</span><span class="p">:</span>
+        <span class="n">BPMs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fileExtractBPM</span><span class="p">(</span><span class="n">audioFile</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">BPMs</span></div>
+
+<div class="viewcode-block" id="fileExtractBPM"><a class="viewcode-back" href="../featuresExtraction.html#featuresExtraction.fileExtractBPM">[docs]</a><span class="k">def</span> <span class="nf">fileExtractBPM</span><span class="p">(</span><span class="n">fileRoute</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    It gets the BPM from an audio file</span>
+
+<span class="sd">    :param str fileRoute: Audio file to extract BPM</span>
+<span class="sd">    :return float: BPM of the audio file</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">Fs</span> <span class="o">=</span> <span class="n">librosa</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fileRoute</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">librosa</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="mi">22050</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">librosa</span><span class="o">.</span><span class="n">to_mono</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">extractBPM</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="extractBPM"><a class="viewcode-back" href="../featuresExtraction.html#featuresExtraction.extractBPM">[docs]</a><span class="k">def</span> <span class="nf">extractBPM</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Extract the BPM from the list of samples of an audio file.</span>
+<span class="sd">    It tries to use essentia, if it is not installed then it used librosa.</span>
+
+<span class="sd">    :param list x: List of samples from an audio file</span>
+<span class="sd">    :return float: BPM of the samples of the audio file</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">rhythm_extractor</span> <span class="o">=</span> <span class="n">RhythmExtractor</span><span class="p">()</span>
+        <span class="n">bpm</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">rhythm_extractor</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+        <span class="c1"># Essentia is not in the system, using librosa instead</span>
+        <span class="n">bpm</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">beat_track</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">bpm</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="extractFeatures"><a class="viewcode-back" href="../featuresExtraction.html#featuresExtraction.extractFeatures">[docs]</a><span class="k">def</span> <span class="nf">extractFeatures</span><span class="p">(</span><span class="n">Fs</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mtWin</span><span class="p">,</span> <span class="n">mtStep</span><span class="p">,</span> <span class="n">stWin</span><span class="p">,</span> <span class="n">stStep</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Extract 71 feature of a singe audio file where x are the sample and Fs the frequency rate.</span>
+
+<span class="sd">    :param Fs: Frequency rate of the audio file</span>
+<span class="sd">    :param x: List of samples</span>
+<span class="sd">    :param float mtWin: Mid-Term analysis window</span>
+<span class="sd">    :param float mtStep: Mid-Term step</span>
+<span class="sd">    :param float stWin: Short-Term analysis window</span>
+<span class="sd">    :param float stStep: Short-Term step</span>
+<span class="sd">    :return list: List of 71 features</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
+
+    <span class="p">[</span><span class="n">MidTermFeatures</span><span class="p">,</span> <span class="n">stFeatures</span><span class="p">]</span> <span class="o">=</span> <span class="n">audioFeatureExtraction</span><span class="o">.</span><span class="n">mtFeatureExtraction</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Fs</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">mtWin</span><span class="o">*</span><span class="n">Fs</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">mtStep</span><span class="o">*</span><span class="n">Fs</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">Fs</span><span class="o">*</span><span class="n">stWin</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">Fs</span> <span class="o">*</span> <span class="n">stStep</span><span class="p">))</span>
+    <span class="p">[</span><span class="n">beat</span><span class="p">,</span> <span class="n">beatConf</span><span class="p">]</span> <span class="o">=</span> <span class="n">audioFeatureExtraction</span><span class="o">.</span><span class="n">beatExtraction</span><span class="p">(</span><span class="n">stFeatures</span><span class="p">,</span> <span class="n">stStep</span><span class="p">)</span>
+
+    <span class="n">MidTermFeatures</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">MidTermFeatures</span><span class="p">)</span>
+    <span class="n">MidTermFeatures</span> <span class="o">=</span> <span class="n">MidTermFeatures</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># long term averaging of mid-term statistics</span>
+
+    <span class="n">MidTermFeatures</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MidTermFeatures</span><span class="p">,</span> <span class="n">beat</span><span class="p">)</span>
+    <span class="n">MidTermFeatures</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MidTermFeatures</span><span class="p">,</span> <span class="n">beatConf</span><span class="p">)</span>
+    <span class="n">MidTermFeatures</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MidTermFeatures</span><span class="p">,</span> <span class="n">extractBPM</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="n">t2</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">clock</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Processing time : &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t2</span><span class="o">-</span><span class="n">t1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">MidTermFeatures</span></div>
+
+<div class="viewcode-block" id="extractFeaturesFolder"><a class="viewcode-back" href="../featuresExtraction.html#featuresExtraction.extractFeaturesFolder">[docs]</a><span class="k">def</span> <span class="nf">extractFeaturesFolder</span><span class="p">(</span><span class="n">dataset_csv</span><span class="o">=</span><span class="s2">&quot;CSV/beatsdataset.csv&quot;</span><span class="p">,</span> <span class="n">dataset_folder</span><span class="o">=</span><span class="s2">&quot;/Users/Capa/Datasets/beatsdataset/&quot;</span><span class="p">,</span>
+                    <span class="n">mtWin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">mtStep</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">stWin</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">stStep</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    MAIN METHOD.</span>
+<span class="sd">    Extracts 71 audio features from every audio file in the dataset_folder.</span>
+<span class="sd">    Write the result in the dataset_csv file which is a pandas.DataFrame.</span>
+<span class="sd">    The dataset_folder must have audio files classified in sub-folders and</span>
+<span class="sd">    the name of the class is the name of the sub-folder which contains them.</span>
+
+<span class="sd">    :param str dataset_csv: File to write the pandas.DataFrame with features and labels</span>
+<span class="sd">    :param str dataset_folder: Folder with the audio samples to extract features from them</span>
+<span class="sd">    :param float mtWin: Size of mid term analysis windows</span>
+<span class="sd">    :param float mtStep: Step of mid term analysis windows</span>
+<span class="sd">    :param float stWin: Size of short term analysis windows</span>
+<span class="sd">    :param float stStep: Step of short term analysis windows</span>
+<span class="sd">    :return: DataFrame with the classes and 71 features for each audio file</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dataset_folder</span><span class="p">)):</span> <span class="c1"># Error if the folder given does not exist</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The dataset folder : &quot;</span> <span class="o">+</span> <span class="n">dataset_folder</span> <span class="o">+</span> <span class="s2">&quot; does not exist.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dataset_csv</span><span class="p">)):</span>    <span class="c1"># If the .csv file exist, ask if the user wants to overwrite it</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The dataset_csv file already exists.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">query_yes_no</span><span class="p">(</span><span class="s2">&quot;Do you want to overwrite it?&quot;</span><span class="p">)):</span>
+            <span class="k">return</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pyAudioFeatures</span><span class="p">(</span><span class="s2">&quot;pyaa-&quot;</span><span class="o">+</span><span class="n">dataset_csv</span><span class="p">,</span> <span class="n">dataset_folder</span><span class="p">,</span> <span class="n">mtWin</span><span class="p">,</span> <span class="n">mtStep</span><span class="p">,</span> <span class="n">stWin</span><span class="p">,</span> <span class="n">stStep</span><span class="p">)</span>
+    <span class="n">bpms</span> <span class="o">=</span> <span class="n">dirsExtractBPM</span><span class="p">(</span><span class="n">dataset_folder</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;71-BPM&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bpms</span>
+    <span class="c1">#swap</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+    <span class="n">aux</span> <span class="o">=</span> <span class="n">columns</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+    <span class="n">columns</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="o">=</span><span class="n">columns</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">columns</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">aux</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span>
+    <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">dataset_csv</span><span class="p">)</span> <span class="c1"># Export the DataFrame to a .csv file for easy import later</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Antonio Caparrini Laura Pérez.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

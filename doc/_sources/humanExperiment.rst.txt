@@ -1,0 +1,7 @@
+humanExperiment module
+======================
+
+.. automodule:: humanExperiment
+    :members:
+    :undoc-members:
+    :show-inheritance:

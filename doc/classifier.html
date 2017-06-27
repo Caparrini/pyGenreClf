@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>classifier module &mdash; pyGenreClf 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="pyGenreClf 1 documentation" href="index.html"/>
+        <link rel="up" title="pyGenreClf" href="modules.html"/>
+        <link rel="next" title="featuresExtraction module" href="featuresExtraction.html"/>
+        <link rel="prev" title="pyGenreClf" href="modules.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyGenreClf
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introducción: pyGenreClf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scriptfuns.html">Uso del script</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">pyGenreClf</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">classifier module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="featuresExtraction.html">featuresExtraction module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="humanExperiment.html">humanExperiment module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimize.html">optimize module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html">tools module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyGenreClf</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">pyGenreClf</a> &raquo;</li>
+        
+      <li>classifier module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/classifier.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-classifier">
+<span id="classifier-module"></span><h1>classifier module<a class="headerlink" href="#module-classifier" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="classifier.KFoldAccuracy">
+<code class="descclassname">classifier.</code><code class="descname">KFoldAccuracy</code><span class="sig-paren">(</span><em>df</em>, <em>clf</em>, <em>n_splits=5</em>, <em>random_state=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classifier.html#KFoldAccuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classifier.KFoldAccuracy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes KFold cross validation accuracy using n_splits folds over the data in the pandas.DataFrame given.
+Uses an stratified KFold with the random_state specified.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> – pandas.DataFrame where is the data for train/test splits</li>
+<li><strong>clf</strong> – classifier with methods fit, predict and score</li>
+<li><strong>n_splits</strong> – number of splits</li>
+<li><strong>random_state</strong> – random state seed</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">mean accuracy, std</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="classifier.KFoldCrossValidation">
+<code class="descclassname">classifier.</code><code class="descname">KFoldCrossValidation</code><span class="sig-paren">(</span><em>df</em>, <em>report_folder</em>, <em>clf</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classifier.html#KFoldCrossValidation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classifier.KFoldCrossValidation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a report using KFold cross validation.
+It generate train/test confusion matrix for each kfold, a final kfold with all the test splits
+and a report.txt with metrics and other data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>df</strong> (<em>pandas.DataFrame</em>) – DataFrame with the dataset</li>
+<li><strong>report_folder</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – folder where save pics and report</li>
+<li><strong>clf</strong> – classifier with methods fit, score and predict sklearn styled</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">clf trained with all the data</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="classifier.TreeKFoldReport">
+<code class="descclassname">classifier.</code><code class="descname">TreeKFoldReport</code><span class="sig-paren">(</span><em>df</em>, <em>report_folder</em>, <em>clf</em>, <em>n_splits=5</em>, <em>random_state=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classifier.html#TreeKFoldReport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classifier.TreeKFoldReport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses KFold cross validation over the dataset generating info in the report folder.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>df</strong> – pandas.DataFrame with the dataset</li>
+<li><strong>report_folder</strong> – folder to save pics and report</li>
+<li><strong>clf</strong> – DecissionTreeClassifier</li>
+<li><strong>n_splits</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of kfolds</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>:param float random:state: Random state seed
+:return: clf full trained with the whole dataset</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="classifier.bestClfs">
+<code class="descclassname">classifier.</code><code class="descname">bestClfs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/classifier.html#bestClfs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classifier.bestClfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method return a list of the best classifiers used in the beatsdataset.csv</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return list:</th><td class="field-body">List of classifiers</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="classifier.plot_confusion_matrix">
+<code class="descclassname">classifier.</code><code class="descname">plot_confusion_matrix</code><span class="sig-paren">(</span><em>cm</em>, <em>classes</em>, <em>normalize=False</em>, <em>title=’Confusion matrix’</em>, <em>cmap=&lt;matplotlib.colors.LinearSegmentedColormap object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classifier.html#plot_confusion_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classifier.plot_confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function plots a confusion matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cm</strong> (<em>numpy.array</em>) – Confusion matrix</li>
+<li><strong>classes</strong> (<em>list</em>) – List of classes</li>
+<li><strong>normalize</strong> (<em>boolean</em>) – True to normalize</li>
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Title of the plot</li>
+<li><strong>cmap</strong> – Colours</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="classifier.plot_feature_importances">
+<code class="descclassname">classifier.</code><code class="descname">plot_feature_importances</code><span class="sig-paren">(</span><em>tree_classifier</em>, <em>feat_names</em>, <em>nfeat=10</em>, <em>dimy=6</em>, <em>dimx=8</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classifier.html#plot_feature_importances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classifier.plot_feature_importances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the nfeat more important features of the tree or random forest given.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>tree_classifier</strong> – classifier DecissionTree or RandomForest</li>
+<li><strong>feat_names</strong> – The name of the features in the tree</li>
+<li><strong>nfeat</strong> – The number of top features to show</li>
+<li><strong>dimx</strong> – fig size x</li>
+<li><strong>dimy</strong> – fig size y</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="classifier.predictGenre">
+<code class="descclassname">classifier.</code><code class="descname">predictGenre</code><span class="sig-paren">(</span><em>song_file_name</em>, <em>clf_pkl=’/Users/Capa/Desktop/pyGenreClf/Examples/beats23classifier.pkl’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classifier.html#predictGenre"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classifier.predictGenre" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receives an audio file route and a binary classifier and returns the genre of the song in a string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>song_file_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – audio file route</li>
+<li><strong>clf_pkl</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – binary classifier route</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">genre of the song using the classifier given or the default beatport classifier</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="classifier.unpackDF">
+<code class="descclassname">classifier.</code><code class="descname">unpackDF</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/classifier.html#unpackDF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#classifier.unpackDF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract classes, features, and labels from a pandas.DataFrame.
+One column of the DataFrame should be called “class” and
+the rest are features.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>df</strong> (<em>DataFrame</em>) – pandas.DataFrame with the dataset</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Classes, features, labels</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="featuresExtraction.html" class="btn btn-neutral float-right" title="featuresExtraction module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="modules.html" class="btn btn-neutral" title="pyGenreClf" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Antonio Caparrini Laura Pérez.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,399 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>humanExperiment &mdash; pyGenreClf 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="pyGenreClf 1 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pyGenreClf
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introducción: pyGenreClf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scriptfuns.html">Uso del script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">pyGenreClf</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyGenreClf</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>humanExperiment</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for humanExperiment</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="k">import</span> <span class="n">copy2</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">confusion_matrix</span><span class="p">,</span> <span class="n">accuracy_score</span>
+
+
+<div class="viewcode-block" id="ExperimentUtils"><a class="viewcode-back" href="../humanExperiment.html#humanExperiment.ExperimentUtils">[docs]</a><span class="k">class</span> <span class="nc">ExperimentUtils</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to create experiments splitting the dataset for human classification.</span>
+<span class="sd">    Also evaluate the performance of that classification.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genres_folder</span><span class="p">,</span> <span class="n">exp_folder</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the class</span>
+
+<span class="sd">        :param genres_folder: Folder where is the subfolder with musical genres</span>
+<span class="sd">        :param exp_folder: Folder to create the experiment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genres_folder</span> <span class="o">=</span> <span class="n">genres_folder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exp_folder</span> <span class="o">=</span> <span class="n">exp_folder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genres_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;BigRoom&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;ElectroHouse&quot;</span><span class="p">:</span> <span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="s2">&quot;DrumAndBass&quot;</span><span class="p">:</span> <span class="s2">&quot;C&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;Dubstep&quot;</span><span class="p">:</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;HipHop&quot;</span><span class="p">:</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;Dance&quot;</span><span class="p">:</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;FutureHouse&quot;</span><span class="p">:</span> <span class="s2">&quot;G&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inv_genres_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">reversed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">genres_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+
+    <span class="k">def</span> <span class="nf">_generate_full_alias_dataframes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_songs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
+<span class="sd">        :param n_songs: Number of songs to select at random for every genre</span>
+<span class="sd">        :return: two pd.DataFrame</span>
+<span class="sd">        dftest -&gt; contains the names of the test songs of all the genres</span>
+<span class="sd">        dftrain -&gt; contains the names of the train songs of all the genres</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">genres_folders</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">genres_folder</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">g</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">genres_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="n">dftest</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="n">dftrain</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">genres_folders</span><span class="p">:</span>
+            <span class="n">df1</span><span class="p">,</span> <span class="n">df2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_alias_dataframes</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">n_songs</span><span class="p">)</span>
+            <span class="n">dftest</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dftest</span><span class="p">,</span> <span class="n">df1</span><span class="p">])</span>
+            <span class="n">dftrain</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dftrain</span><span class="p">,</span> <span class="n">df2</span><span class="p">])</span>
+        <span class="n">anonymized_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;song&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">x</span> <span class="o">%</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span> <span class="o">%</span> <span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dftest</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">dftest</span> <span class="o">=</span> <span class="n">dftest</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Relocation at random, avoiding songs grouped by genre</span>
+        <span class="n">dftest</span><span class="p">[</span><span class="s2">&quot;test_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">anonymized_names</span>  <span class="c1"># Use the anonymized_names with the random DataFrame</span>
+        <span class="k">return</span> <span class="n">dftest</span><span class="p">,</span> <span class="n">dftrain</span>
+
+    <span class="k">def</span> <span class="nf">_generate_alias_dataframes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">genre_folder</span><span class="p">,</span> <span class="n">n_songs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
+<span class="sd">        :param genre_folder: Genre folder to extract alias DataFrames</span>
+<span class="sd">        :param n_songs: Number of songs to select at random of the genre</span>
+<span class="sd">        :return: two pd.DataFrame</span>
+<span class="sd">        dftest -&gt; contains the names of the test songs of genre_folder</span>
+<span class="sd">        dftrain -&gt; contains the names of the train songs of genre_folder</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">songs</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">genre_folder</span><span class="p">)][</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;.mp3&quot;</span> <span class="ow">in</span> <span class="n">y</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">songs</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">100</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: The genre folder &quot;</span> <span class="o">+</span> <span class="n">genre_folder</span> <span class="o">+</span> <span class="s2">&quot; only have &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">songs</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; songs.&quot;</span><span class="p">)</span>
+        <span class="n">genre</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">genre_folder</span><span class="p">)</span>
+        <span class="n">label_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">genre</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">x</span> <span class="o">%</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span> <span class="o">%</span> <span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">songs</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">genre</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">songs</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>  <span class="c1"># genre label</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;real_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">songs</span>  <span class="c1"># filename</span>
+        <span class="n">df</span><span class="p">[</span><span class="s2">&quot;label_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">label_names</span>  <span class="c1"># dataset name</span>
+        <span class="n">dftest</span><span class="p">,</span> <span class="n">dftrain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n_songs</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">train_names</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">genres_dict</span><span class="p">[</span><span class="n">genre</span><span class="p">]</span> <span class="o">+</span>  <span class="c1"># Names according to the label in genres_dict</span>
+                       <span class="nb">str</span><span class="p">((</span><span class="n">x</span> <span class="o">%</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span> <span class="o">%</span> <span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dftrain</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+
+        <span class="n">dftrain</span><span class="p">[</span><span class="s2">&quot;train_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_names</span>  <span class="c1"># Anonymizing train</span>
+        <span class="k">return</span> <span class="n">dftest</span><span class="p">,</span> <span class="n">dftrain</span>
+
+<div class="viewcode-block" id="ExperimentUtils.build_experiment"><a class="viewcode-back" href="../humanExperiment.html#humanExperiment.ExperimentUtils.build_experiment">[docs]</a>    <span class="k">def</span> <span class="nf">build_experiment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number_of_songs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the experiment folder at exp_folder path</span>
+
+<span class="sd">        :param number_of_songs: Number of songs of each genre (half to train, half to test)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dftest</span><span class="p">,</span> <span class="n">dftrain</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_full_alias_dataframes</span><span class="p">(</span><span class="n">n_songs</span><span class="o">=</span><span class="n">number_of_songs</span><span class="p">)</span>  <span class="c1"># Get names DataFrames</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_folder</span><span class="p">)</span>  <span class="c1"># Create main exp folder</span>
+        <span class="n">train_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_folder</span><span class="p">,</span> <span class="s2">&quot;train&quot;</span><span class="p">)</span>
+        <span class="n">test_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_folder</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">)</span>
+        <span class="n">eval_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_folder</span><span class="p">,</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">train_folder</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">test_folder</span><span class="p">)</span>
+        <span class="c1"># Create one folder for each genre in train and test folders</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">genres_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">gen</span> <span class="o">=</span> <span class="n">dftrain</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">key</span>  <span class="c1"># Rule to select the actual genre later in dftrain</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">train_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">genres_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">genres_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>  <span class="c1"># Empty folder</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">dftrain</span><span class="p">[</span><span class="n">gen</span><span class="p">]</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                <span class="n">source</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genres_folder</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;real_name&quot;</span><span class="p">])</span>  <span class="c1"># Song in the dataset folder</span>
+                <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">train_folder</span><span class="p">,</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">genres_dict</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;train_name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.mp3&quot;</span><span class="p">)</span>  <span class="c1"># Song anonymized</span>
+                <span class="n">copy2</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>  <span class="c1"># Copying into train/label folder</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="c1"># Add the test songs to the test folder</span>
+        <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">dftest</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">source</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genres_folder</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;real_name&quot;</span><span class="p">])</span>  <span class="c1"># Song in the dataset folder</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_folder</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;test_name&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.mp3&quot;</span><span class="p">)</span>  <span class="c1"># Song anonymized</span>
+            <span class="n">copy2</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>  <span class="c1"># Copying into test folder</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">eval_folder</span><span class="p">)</span>  <span class="c1"># Create the evaluation folder to save results</span>
+        <span class="c1"># Save the alias files to evaluate when the experiments will be done</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">dftrain</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">eval_folder</span><span class="p">,</span> <span class="s2">&quot;train_songs.csv&quot;</span><span class="p">))</span>
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">dftest</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">eval_folder</span><span class="p">,</span> <span class="s2">&quot;test_songs.csv&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ExperimentUtils.evaluate_results"><a class="viewcode-back" href="../humanExperiment.html#humanExperiment.ExperimentUtils.evaluate_results">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates the performance in the experiment given the saved .CSV test file with the alias and the folder test</span>
+<span class="sd">        modified by the subjects. This evaluation is shown as a confusion_matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dftest</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_folder</span><span class="p">,</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">,</span> <span class="s2">&quot;test_songs.csv&quot;</span><span class="p">))</span>
+        <span class="n">dfeval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_evaluation_df</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_folder</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">))</span>
+        <span class="c1"># Joining the DataFrame we used and the one results from the user by the &quot;test_name&quot; column in both</span>
+        <span class="n">dfeval</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">dftest</span><span class="p">,</span> <span class="n">dfeval</span><span class="p">)</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">dfeval</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span>  <span class="c1"># Real class</span>
+        <span class="n">pred_labels</span> <span class="o">=</span> <span class="n">dfeval</span><span class="p">[</span><span class="s2">&quot;pred_class&quot;</span><span class="p">]</span>  <span class="c1"># Predicted class</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">pred_labels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">genres_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cm</span></div>
+
+<div class="viewcode-block" id="ExperimentUtils.get_evaluation_df"><a class="viewcode-back" href="../humanExperiment.html#humanExperiment.ExperimentUtils.get_evaluation_df">[docs]</a>    <span class="k">def</span> <span class="nf">get_evaluation_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">test_folder</span><span class="p">):</span>
+        <span class="n">dfeval</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="c1"># Generate DataFrame with the name of the songs and the label predicted by the subject</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_genres_dict</span><span class="p">:</span>
+            <span class="n">dfaux</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+            <span class="n">songs</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.mp3&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span>
+                     <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_folder</span><span class="p">,</span> <span class="n">key</span><span class="p">))][</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;.mp3&quot;</span> <span class="ow">in</span> <span class="n">y</span><span class="p">]</span>
+            <span class="n">dfaux</span><span class="p">[</span><span class="s2">&quot;test_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">songs</span>
+            <span class="n">pred_labels</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">inv_genres_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">songs</span><span class="p">)</span>
+            <span class="n">dfaux</span><span class="p">[</span><span class="s2">&quot;pred_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pred_labels</span>
+            <span class="n">dfeval</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dfeval</span><span class="p">,</span> <span class="n">dfaux</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">dfeval</span></div>
+
+<div class="viewcode-block" id="ExperimentUtils.evaluate_all_exps"><a class="viewcode-back" href="../humanExperiment.html#humanExperiment.ExperimentUtils.evaluate_all_exps">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_all_exps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiments_folder</span><span class="p">):</span>
+
+        <span class="n">accuracies</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dftest</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_folder</span><span class="p">,</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">,</span> <span class="s2">&quot;test_songs.csv&quot;</span><span class="p">))</span>
+        <span class="n">experiment_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">experiments_folder</span><span class="p">)][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dffinal</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">experiment_folders</span><span class="p">:</span>
+            <span class="n">dfeval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_evaluation_df</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiments_folder</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="s2">&quot;test&quot;</span><span class="p">))</span>
+            <span class="n">dfeval</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">dftest</span><span class="p">,</span> <span class="n">dfeval</span><span class="p">)</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">dfeval</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span>  <span class="c1"># Real class</span>
+            <span class="n">pred_labels</span> <span class="o">=</span> <span class="n">dfeval</span><span class="p">[</span><span class="s2">&quot;pred_class&quot;</span><span class="p">]</span>  <span class="c1"># Predicted class</span>
+            <span class="n">accuracies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">pred_labels</span><span class="p">))</span>
+            <span class="n">dffinal</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dffinal</span><span class="p">,</span> <span class="n">dfeval</span><span class="p">])</span>
+
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">dffinal</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span>  <span class="c1"># Real class</span>
+        <span class="n">pred_labels</span> <span class="o">=</span> <span class="n">dffinal</span><span class="p">[</span><span class="s2">&quot;pred_class&quot;</span><span class="p">]</span>  <span class="c1"># Predicted class</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">pred_labels</span><span class="p">,</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genres_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">accuracies</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">accuracies</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">accuracies</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">cm</span></div>
+
+<div class="viewcode-block" id="ExperimentUtils.evaluate_all_forest_style"><a class="viewcode-back" href="../humanExperiment.html#humanExperiment.ExperimentUtils.evaluate_all_forest_style">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_all_forest_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiments_folder</span><span class="p">):</span>
+        <span class="n">accuracies</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">dftest</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_folder</span><span class="p">,</span> <span class="s2">&quot;evaluation&quot;</span><span class="p">,</span> <span class="s2">&quot;test_songs.csv&quot;</span><span class="p">))</span>
+        <span class="n">experiment_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">experiments_folder</span><span class="p">)][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">dffinal</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">experiment_folders</span><span class="p">:</span>
+            <span class="n">dfeval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_evaluation_df</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">experiments_folder</span><span class="p">,</span><span class="n">f</span><span class="p">,</span><span class="s2">&quot;test&quot;</span><span class="p">))</span>
+            <span class="n">dfeval</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">dftest</span><span class="p">,</span> <span class="n">dfeval</span><span class="p">)</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="n">dfeval</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span>  <span class="c1"># Real class</span>
+            <span class="n">pred_labels</span> <span class="o">=</span> <span class="n">dfeval</span><span class="p">[</span><span class="s2">&quot;pred_class&quot;</span><span class="p">]</span>  <span class="c1"># Predicted class</span>
+            <span class="n">accuracies</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">pred_labels</span><span class="p">))</span>
+            <span class="n">dffinal</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">dffinal</span><span class="p">,</span> <span class="n">dfeval</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">dffinal</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Antonio Caparrini Laura Pérez.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

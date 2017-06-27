@@ -1,0 +1,454 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tools &mdash; pyGenreClf 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="pyGenreClf 1 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pyGenreClf
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introducción: pyGenreClf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scriptfuns.html">Uso del script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">pyGenreClf</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyGenreClf</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>tools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for tools</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<span class="c1"># Given the route of the genres directory, transforms every song into </span>
+<span class="c1"># .wav format and deletes the old one.</span>
+<span class="c1"># Receives nothing</span>
+<span class="c1"># Returns nothing</span>
+<div class="viewcode-block" id="songs_to_wav"><a class="viewcode-back" href="../tools.html#tools.songs_to_wav">[docs]</a><span class="k">def</span> <span class="nf">songs_to_wav</span><span class="p">():</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)</span>
+
+    <span class="n">genre_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="s2">&quot;./&quot;</span><span class="p">)]</span>
+    <span class="n">genre_folders</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">genre_folders</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">g</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+            <span class="k">if</span><span class="p">(</span><span class="s2">&quot;.wav&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">s</span><span class="p">):</span>
+                <span class="n">ruta</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="n">s</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;ffmpeg -i &quot;&#39;</span> <span class="o">+</span> <span class="n">ruta</span> <span class="o">+</span>
+                <span class="s1">&#39;&quot; -acodec pcm_s16le -ar 22050 -ac 1 &quot;&#39;</span> <span class="o">+</span> <span class="n">ruta</span> <span class="o">+</span> <span class="s1">&#39;.wav&quot;&#39;</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ruta</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConfusionMatrixUtils"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils">[docs]</a><span class="k">class</span> <span class="nc">ConfusionMatrixUtils</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class object to generate and save the metrics of the confusion matrix.</span>
+<span class="sd">    Whe it is created it builds a list of dictionaries with the TP,TN,FP,FN of the cm.</span>
+<span class="sd">    Summoning each function calculate the asked metric.</span>
+
+<span class="sd">    cm : confusion matrix (equal rows and columns)</span>
+<span class="sd">    class_names : list of names of the classes present in the confusion matrix ( len = cm.shape[0] = cm.shape[1] )</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cm</span><span class="p">,</span> <span class="n">class_names</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cm</span> <span class="o">=</span> <span class="n">cm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span> <span class="o">=</span> <span class="n">class_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generateMetrics</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ConfusionMatrixUtils.generateMetrics"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.generateMetrics">[docs]</a>    <span class="k">def</span> <span class="nf">generateMetrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        It generates the basic metrics for each class (TP,FP,TN,FN)</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metrics_class</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">metrics</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;FP&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="p">[[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">j</span><span class="o">!=</span><span class="n">i</span><span class="p">],</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">aux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="p">,(</span><span class="n">i</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">aux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">aux</span><span class="p">,(</span><span class="n">i</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;TN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">aux</span><span class="p">))</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;FN&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">,[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">j</span><span class="o">!=</span><span class="n">i</span><span class="p">]])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">metrics_class</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConfusionMatrixUtils.recall"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.recall">[docs]</a>    <span class="k">def</span> <span class="nf">recall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sensitivity, recall, hit rate or true positive rate(TPR)</span>
+<span class="sd">        TPR = TP / (TP + FN)</span>
+
+<span class="sd">        :param index: index of the class</span>
+<span class="sd">        :return: recall or -1 if it can not be calculated</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics_class</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">recall</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FN&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: TP+FN=0 (division by zero), recall can&#39;t be calculated.&quot;</span><span class="p">)</span>
+            <span class="n">recall</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="n">recall</span></div>
+
+    <span class="c1"># Specifity or true negative rate TNR</span>
+<div class="viewcode-block" id="ConfusionMatrixUtils.specificity"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.specificity">[docs]</a>    <span class="k">def</span> <span class="nf">specificity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="c1"># TNR = TN / (TN + FP)</span>
+        <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics_class</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TN&quot;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TN&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FP&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ConfusionMatrixUtils.precision"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.precision">[docs]</a>    <span class="k">def</span> <span class="nf">precision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Precision or positive predictive value PPV</span>
+<span class="sd">        PPV = TP / (TP + FP)</span>
+
+<span class="sd">        :param index: index of the class</span>
+<span class="sd">        :return: precision or -1 if it can not be calculated</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics_class</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">precision</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FP&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: TP+FP=0 (division by zero), precision can&#39;t be calculated.&quot;</span><span class="p">)</span>
+            <span class="n">precision</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="n">precision</span></div>
+
+    <span class="c1"># Negative predictive value NPV</span>
+<div class="viewcode-block" id="ConfusionMatrixUtils.NPV"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.NPV">[docs]</a>    <span class="k">def</span> <span class="nf">NPV</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="c1"># NPV = TN / (TN+FN)</span>
+        <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics_class</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TN&quot;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TN&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FN&quot;</span><span class="p">])</span></div>
+
+    <span class="c1"># Miss rate or false negative rate FNR</span>
+<div class="viewcode-block" id="ConfusionMatrixUtils.missrate"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.missrate">[docs]</a>    <span class="k">def</span> <span class="nf">missrate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="c1"># FNR = 1 - TPR</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">recall</span><span class="p">(</span><span class="n">index</span><span class="p">)</span></div>
+
+    <span class="c1"># Fall-out rate of false negative rate FNR</span>
+<div class="viewcode-block" id="ConfusionMatrixUtils.fallout"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.fallout">[docs]</a>    <span class="k">def</span> <span class="nf">fallout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="c1"># FPR = 1 - TNR</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">specificity</span><span class="p">(</span><span class="n">index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ConfusionMatrixUtils.accuracy"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.accuracy">[docs]</a>    <span class="k">def</span> <span class="nf">accuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="c1"># ACC = (TP + TN) / ( (FN + TP) + (FP + TN) )</span>
+        <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics_class</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TN&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FN&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FP&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TN&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="ConfusionMatrixUtils.F1score"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.F1score">[docs]</a>    <span class="k">def</span> <span class="nf">F1score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Harmonic mean of precision and sensitivity</span>
+<span class="sd">        2TP / (2*TP + FP + FN)</span>
+
+<span class="sd">        :param index: index of the class</span>
+<span class="sd">        :return: f1score or -1 if it can not be calculated</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics_class</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f1s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FP&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FN&quot;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ERROR: TP=FP=FN=0 (division by zero), F1score can&#39;t be calculated.&quot;</span><span class="p">)</span>
+            <span class="n">f1s</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="n">f1s</span></div>
+
+    <span class="c1"># Matthews correlation coefficient</span>
+<div class="viewcode-block" id="ConfusionMatrixUtils.MCC"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.MCC">[docs]</a>    <span class="k">def</span> <span class="nf">MCC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="c1"># MCC = (TP*TN - FP*FN) / SQRT[(TP+FP) (TP+FN) (TN+FP) (TN+FN)]</span>
+        <span class="nb">dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics_class</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">((</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">]</span><span class="o">*</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TN&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FP&quot;</span><span class="p">]</span><span class="o">*</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FN&quot;</span><span class="p">]))</span><span class="o">/</span>\
+               <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FP&quot;</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TP&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FN&quot;</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TN&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FP&quot;</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;TN&quot;</span><span class="p">]</span><span class="o">+</span><span class="nb">dict</span><span class="p">[</span><span class="s2">&quot;FN&quot;</span><span class="p">]))</span></div>
+
+    <span class="c1"># Informedness or Bookmaker Informedness BM</span>
+<div class="viewcode-block" id="ConfusionMatrixUtils.informedness"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.informedness">[docs]</a>    <span class="k">def</span> <span class="nf">informedness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="c1"># BM = TPR + TNR -1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">recall</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">specificity</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="ConfusionMatrixUtils.markedness"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.markedness">[docs]</a>    <span class="k">def</span> <span class="nf">markedness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="p">):</span>
+        <span class="c1"># MK = PPV + NPV -1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">precision</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">NPV</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="ConfusionMatrixUtils.report"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.report">[docs]</a>    <span class="k">def</span> <span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Generates a string as a report given all the class names,</span>
+<span class="sd">        recall, precision and f1 score.</span>
+
+<span class="sd">        :return str: report</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="s2">&quot;Confusion Matrix Metrics Report</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="p">)):</span>
+            <span class="n">r</span><span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;:</span><span class="se">\n\t</span><span class="s2">&quot;</span>
+            <span class="n">r</span><span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metrics_class</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">r</span><span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Precision: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">precision</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; Recall: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recall</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> \
+                <span class="s2">&quot; F1score: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F1score</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="ConfusionMatrixUtils.cmmToGraph"><a class="viewcode-back" href="../tools.html#tools.ConfusionMatrixUtils.cmmToGraph">[docs]</a>    <span class="k">def</span> <span class="nf">cmmToGraph</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Transforms the current cm into a graph</span>
+
+<span class="sd">        :return networkx.DiGraph: confusion graph</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">DiGraph</span><span class="p">()</span>
+
+        <span class="c1"># Add node for each class_name with weight equal to</span>
+        <span class="c1"># his accuracy rate</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="p">)):</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">weight</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="c1"># Add directed edge between each class when it is a confusion</span>
+        <span class="c1"># in the matrix</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="p">)):</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">!=</span><span class="n">j</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+                    <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_names</span><span class="p">[</span><span class="n">j</span><span class="p">],</span>
+                               <span class="n">weight</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">G</span></div></div>
+
+<div class="viewcode-block" id="beatsdataset"><a class="viewcode-back" href="../tools.html#tools.beatsdataset">[docs]</a><span class="k">def</span> <span class="nf">beatsdataset</span><span class="p">():</span>
+    <span class="c1"># Base folder with songs in mp3</span>
+    <span class="n">old</span> <span class="o">=</span> <span class="s2">&quot;../../Machine Learning/Datasets/genres-beatport/&quot;</span>
+    <span class="n">new</span> <span class="o">=</span> <span class="s2">&quot;beatsdataset/&quot;</span>
+    <span class="n">genresFolder</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">old</span><span class="p">)]</span>
+
+    <span class="n">genres</span> <span class="o">=</span> <span class="n">genresFolder</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">genres</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating wav files for &quot;</span> <span class="o">+</span> <span class="n">g</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">new</span><span class="o">+</span><span class="n">g</span><span class="p">)</span>
+        <span class="c1"># File to save the song names list</span>
+        <span class="n">songsListFile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">new</span> <span class="o">+</span> <span class="n">g</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">g</span> <span class="o">+</span> <span class="s2">&quot;.csv&quot;</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">songsListFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Alias;Name</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">songs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">old</span><span class="o">+</span><span class="n">g</span><span class="p">)][</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">songs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;.mp3&quot;</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">+</span><span class="mi">1</span>
+                <span class="n">oldfile</span> <span class="o">=</span> <span class="n">old</span> <span class="o">+</span> <span class="n">g</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">s</span>
+                <span class="n">newfile</span> <span class="o">=</span> <span class="n">new</span> <span class="o">+</span> <span class="n">g</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">g</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="o">/</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">count</span><span class="o">%</span><span class="mi">100</span><span class="p">)</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="o">%</span><span class="mi">10</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;ffmpeg -i &quot;&#39;</span> <span class="o">+</span> <span class="n">oldfile</span> <span class="o">+</span>
+                <span class="s1">&#39;&quot; -acodec pcm_s16le -ar 22050 -ac 1 &quot;&#39;</span> <span class="o">+</span> <span class="n">newfile</span> <span class="o">+</span> <span class="s1">&#39;.wav&quot;&#39;</span><span class="p">)</span>
+                <span class="n">songsListFile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">newfile</span><span class="o">+</span><span class="s2">&quot;;&quot;</span><span class="o">+</span><span class="n">s</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Transferred &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; songs</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Closing list file: &quot;</span> <span class="o">+</span> <span class="n">g</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">songsListFile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="create_registry_dataset"><a class="viewcode-back" href="../tools.html#tools.create_registry_dataset">[docs]</a><span class="k">def</span> <span class="nf">create_registry_dataset</span><span class="p">(</span><span class="n">dataset_foler</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;.wav&quot;</span><span class="p">):</span>
+    <span class="n">folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">dataset_foler</span><span class="p">)][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">:</span>
+        <span class="n">audioFiles</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="nb">format</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dataset_foler</span><span class="p">,</span> <span class="n">f</span><span class="p">))][</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="nb">format</span> <span class="ow">in</span> <span class="n">y</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">audioFiles</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">100</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: The genre folder &quot;</span> <span class="o">+</span> <span class="n">f</span> <span class="o">+</span> <span class="s2">&quot; only have &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">audioFiles</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; songs.&quot;</span><span class="p">)</span>
+        <span class="n">label_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">x</span> <span class="o">%</span> <span class="mi">100</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span> <span class="o">%</span> <span class="mi">10</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">audioFiles</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">audioFiles</span><span class="p">)</span>
+        <span class="n">dfaux</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="n">dfaux</span><span class="p">[</span><span class="s2">&quot;class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels</span>  <span class="c1"># genre label</span>
+        <span class="n">dfaux</span><span class="p">[</span><span class="s2">&quot;real_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">audioFiles</span>  <span class="c1"># filename</span>
+        <span class="n">dfaux</span><span class="p">[</span><span class="s2">&quot;label_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">label_names</span>  <span class="c1"># dataset name</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df</span><span class="p">,</span> <span class="n">dfaux</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Antonio Caparrini Laura Pérez.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

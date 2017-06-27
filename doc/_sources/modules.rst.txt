@@ -1,0 +1,12 @@
+pyGenreClf
+==========
+
+.. toctree::
+   :maxdepth: 4
+
+   classifier
+   featuresExtraction
+   humanExperiment
+   main
+   optimize
+   tools

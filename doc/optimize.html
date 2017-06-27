@@ -1,0 +1,460 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>optimize module &mdash; pyGenreClf 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="pyGenreClf 1 documentation" href="index.html"/>
+        <link rel="up" title="pyGenreClf" href="modules.html"/>
+        <link rel="next" title="tools module" href="tools.html"/>
+        <link rel="prev" title="main module" href="main.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> pyGenreClf
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introducción: pyGenreClf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scriptfuns.html">Uso del script</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">pyGenreClf</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classifier.html">classifier module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="featuresExtraction.html">featuresExtraction module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="humanExperiment.html">humanExperiment module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">optimize module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools.html">tools module</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pyGenreClf</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">pyGenreClf</a> &raquo;</li>
+        
+      <li>optimize module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/optimize.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-optimize">
+<span id="optimize-module"></span><h1>optimize module<a class="headerlink" href="#module-optimize" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="optimize.BaseOptimizer">
+<em class="property">class </em><code class="descclassname">optimize.</code><code class="descname">BaseOptimizer</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#BaseOptimizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.BaseOptimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Abstract class to create optimizer for different machine learning classifier algorithms</p>
+<dl class="method">
+<dt id="optimize.BaseOptimizer.evaluateClf">
+<code class="descname">evaluateClf</code><span class="sig-paren">(</span><em>individual</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#BaseOptimizer.evaluateClf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.BaseOptimizer.evaluateClf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to evaluate the individual, in this case the classifier</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>individual</strong> – individual for evaluation</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">mean accuracy, standard deviation accuracy</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="optimize.BaseOptimizer.getClf">
+<code class="descname">getClf</code><span class="sig-paren">(</span><em>individual</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#BaseOptimizer.getClf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.BaseOptimizer.getClf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="optimize.BaseOptimizer.getParams">
+<code class="descname">getParams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#BaseOptimizer.getParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.BaseOptimizer.getParams" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="optimize.BaseOptimizer.initIndividual">
+<code class="descname">initIndividual</code><span class="sig-paren">(</span><em>pcls</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#BaseOptimizer.initIndividual"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.BaseOptimizer.initIndividual" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to initialize an individual instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pcls</strong> – Method to create the individual as an extension of the class list</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">individual</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="optimize.BaseOptimizer.optimizeClf">
+<code class="descname">optimizeClf</code><span class="sig-paren">(</span><em>population=10</em>, <em>generations=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#BaseOptimizer.optimizeClf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.BaseOptimizer.optimizeClf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searches through a genetic algorithm the best classifier</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>population</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of members of the first generation</li>
+<li><strong>generations</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of generations</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Trained classifier</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="optimize.BaseOptimizer.plotLogbook">
+<code class="descname">plotLogbook</code><span class="sig-paren">(</span><em>logbook</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#BaseOptimizer.plotLogbook"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.BaseOptimizer.plotLogbook" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the given loogboook</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>logbook</strong> – logbook of the genetic algorithm</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="optimize.ExtraTreesOptimizer">
+<em class="property">class </em><code class="descclassname">optimize.</code><code class="descname">ExtraTreesOptimizer</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#ExtraTreesOptimizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.ExtraTreesOptimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optimize.ForestOptimizer" title="optimize.ForestOptimizer"><code class="xref py py-class docutils literal"><span class="pre">optimize.ForestOptimizer</span></code></a></p>
+<p>Concrete optimizer for sklearn extra trees -&gt; sklearn.ensemble.ExtraTreesClassifier
+Use the same getParams() as ForestOptimizer</p>
+<dl class="method">
+<dt id="optimize.ExtraTreesOptimizer.getClf">
+<code class="descname">getClf</code><span class="sig-paren">(</span><em>individual</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#ExtraTreesOptimizer.getClf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.ExtraTreesOptimizer.getClf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a classifier object from an individual one</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>individual</strong> – individual to create a classifier</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">classifier ExtraTreesClassifier</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="optimize.ForestOptimizer">
+<em class="property">class </em><code class="descclassname">optimize.</code><code class="descname">ForestOptimizer</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#ForestOptimizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.ForestOptimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optimize.TreeOptimizer" title="optimize.TreeOptimizer"><code class="xref py py-class docutils literal"><span class="pre">optimize.TreeOptimizer</span></code></a></p>
+<p>Concrete optimizer for sklearn random forest -&gt; sklearn.ensemble.RandomForestClassifier</p>
+<dl class="method">
+<dt id="optimize.ForestOptimizer.getClf">
+<code class="descname">getClf</code><span class="sig-paren">(</span><em>individual</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#ForestOptimizer.getClf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.ForestOptimizer.getClf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a classifier object from an individual one</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>individual</strong> – individual to create classifier</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">classifier sklearn.ensemble.RandomForestClassifier</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="optimize.ForestOptimizer.getParams">
+<code class="descname">getParams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#ForestOptimizer.getParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.ForestOptimizer.getParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Params for the creation of individuals (relative to the algorithm)
+These params define the name of the param, min value, max value, and type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of params</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="optimize.Param">
+<em class="property">class </em><code class="descclassname">optimize.</code><code class="descname">Param</code><span class="sig-paren">(</span><em>name</em>, <em>minValue</em>, <em>maxValue</em>, <em>typeParam</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#Param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.Param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>This class object saves the params to generalize the optimize class</p>
+<dl class="method">
+<dt id="optimize.Param.correct">
+<code class="descname">correct</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#Param.correct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.Param.correct" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> – value to verify if accomplishes type, min and max due to mutations</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">value fixed</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="optimize.TreeOptimizer">
+<em class="property">class </em><code class="descclassname">optimize.</code><code class="descname">TreeOptimizer</code><span class="sig-paren">(</span><em>df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#TreeOptimizer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.TreeOptimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#optimize.BaseOptimizer" title="optimize.BaseOptimizer"><code class="xref py py-class docutils literal"><span class="pre">optimize.BaseOptimizer</span></code></a></p>
+<p>Concrete optimizer for sklearn classifier -&gt; sklearn.tree.DecisionTreeClassifier</p>
+<dl class="method">
+<dt id="optimize.TreeOptimizer.getClf">
+<code class="descname">getClf</code><span class="sig-paren">(</span><em>individual</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#TreeOptimizer.getClf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.TreeOptimizer.getClf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a classifier object from an individual one</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>individual</strong> – individual to create classifier</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">classifier sklearn.tree.DecisionTreeClassifier</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="optimize.TreeOptimizer.getParams">
+<code class="descname">getParams</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/optimize.html#TreeOptimizer.getParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#optimize.TreeOptimizer.getParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Params for the creation of individuals (relative to the algorithm)
+These params define the name of the param, min value, max value, and type</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of params</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="optimize.random">
+<code class="descclassname">optimize.</code><code class="descname">random</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; x in the interval [0, 1).<a class="headerlink" href="#optimize.random" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tools.html" class="btn btn-neutral float-right" title="tools module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="main.html" class="btn btn-neutral" title="main module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Antonio Caparrini Laura Pérez.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

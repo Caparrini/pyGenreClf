@@ -1,0 +1,60 @@
+=========================================
+Uso del script
+=========================================
+
+.. contents:: Tabla de contenidos
+
+Vista general
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+El script con funciones es el módulo main.py que usaremos en consola. Para utilizarlo podemos usar la opción -h de la siguiente forma:
+
+.. code-block:: bash
+
+    $ python main.py -h
+
+    usage: main.py [-h]  ...
+
+    Examples of use
+
+    optional arguments:
+      -h, --help            show this help message and exit
+
+    subcommands:
+      available tasks
+
+      
+        featureExtractionDataset
+                            Extracts audio features from dataset folder
+        bestForestClassifier
+                            Generates the best random forest classifier and
+                            generates a report
+        bestTreeClassifier  Generates the best decission tree classifier and
+                            generates a report
+        predictClass        Predicts the class of the given audio file or address
+
+Vemos las funciones que puede realizar el script, para cada una de ellas podemos invocar la función -h también para ver los parámetros que requiere, por ejemplo:
+
+.. code-block:: bash
+
+    $ python main.py featureExtractionDataset -h
+    
+    usage: main.py featureExtractionDataset [-h] -f DATASET_FOLDER -o
+                                            OUTPUT_DATAFRAME [-mw MTWIN]
+                                            [-ms MTSTEP] [-sw STWIN] [-ss STSTEP]
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -f DATASET_FOLDER, --dataset_folder DATASET_FOLDER
+                            Input structured folder with subfolders of audio
+                            files. Each subfolder is
+      -o OUTPUT_DATAFRAME, --output_DataFrame OUTPUT_DATAFRAME
+                            Output file
+      -mw MTWIN, --mtwin MTWIN
+                            Mid-term window size
+      -ms MTSTEP, --mtstep MTSTEP
+                            Mid-term window step
+      -sw STWIN, --stwin STWIN
+                            Short-term window size
+      -ss STSTEP, --ststep STSTEP
+                            Short-term window step

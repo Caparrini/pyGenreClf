@@ -1,0 +1,522 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>optimize &mdash; pyGenreClf 1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="pyGenreClf 1 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> pyGenreClf
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introducción: pyGenreClf</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../scriptfuns.html">Uso del script</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">pyGenreClf</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyGenreClf</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Module code</a> &raquo;</li>
+        
+      <li>optimize</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for optimize</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">classifier</span> <span class="k">import</span> <span class="n">KFoldAccuracy</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">random</span><span class="p">,</span> <span class="n">randint</span>
+<span class="kn">from</span> <span class="nn">sklearn.tree</span> <span class="k">import</span> <span class="n">DecisionTreeClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="k">import</span> <span class="n">RandomForestClassifier</span><span class="p">,</span> <span class="n">ExtraTreesClassifier</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">deap</span> <span class="k">import</span> <span class="n">base</span><span class="p">,</span> <span class="n">creator</span><span class="p">,</span> <span class="n">tools</span><span class="p">,</span> <span class="n">algorithms</span>
+
+
+<div class="viewcode-block" id="Param"><a class="viewcode-back" href="../optimize.html#optimize.Param">[docs]</a><span class="k">class</span> <span class="nc">Param</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class object saves the params to generalize the optimize class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">minValue</span><span class="p">,</span> <span class="n">maxValue</span><span class="p">,</span> <span class="n">typeParam</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Init object</span>
+
+<span class="sd">        :param name: (str) Name of the param</span>
+<span class="sd">        :param minValue: (int) Minimum value of the param</span>
+<span class="sd">        :param maxValue: (int) Maximum value of the param</span>
+<span class="sd">        :param typeParam: (type) type of the param</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minValue</span> <span class="o">=</span> <span class="n">minValue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maxValue</span> <span class="o">=</span> <span class="n">maxValue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">typeParam</span>
+
+<div class="viewcode-block" id="Param.correct"><a class="viewcode-back" href="../optimize.html#optimize.Param.correct">[docs]</a>    <span class="k">def</span> <span class="nf">correct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param value: value to verify if accomplishes type, min and max due to mutations</span>
+<span class="sd">        :return: value fixed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">==</span><span class="nb">int</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">=</span><span class="n">value</span>
+
+        <span class="k">if</span> <span class="n">ret</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">maxValue</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">maxValue</span>
+        <span class="k">elif</span> <span class="n">ret</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">minValue</span><span class="p">:</span>
+            <span class="n">ret</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">minValue</span>
+
+        <span class="k">return</span> <span class="n">ret</span></div></div>
+
+
+<div class="viewcode-block" id="BaseOptimizer"><a class="viewcode-back" href="../optimize.html#optimize.BaseOptimizer">[docs]</a><span class="k">class</span> <span class="nc">BaseOptimizer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abstract class to create optimizer for different machine learning classifier algorithms</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">ABCMeta</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param df: (DataFrame) DataFrame to train and test the classifier </span>
+<span class="sd">        (maybe in the future this must be change for features, labels list which is more usual)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getParams</span><span class="p">()</span>
+
+<div class="viewcode-block" id="BaseOptimizer.initIndividual"><a class="viewcode-back" href="../optimize.html#optimize.BaseOptimizer.initIndividual">[docs]</a>    <span class="k">def</span> <span class="nf">initIndividual</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to initialize an individual instance</span>
+
+<span class="sd">        :param pcls: Method to create the individual as an extension of the class list</span>
+<span class="sd">        :return: individual</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+                <span class="n">ps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">minValue</span><span class="p">,</span> <span class="n">p</span><span class="o">.</span><span class="n">maxValue</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random</span><span class="p">())</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">pcls</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ind</span></div>
+
+<div class="viewcode-block" id="BaseOptimizer.getParams"><a class="viewcode-back" href="../optimize.html#optimize.BaseOptimizer.getParams">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">getParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseOptimizer.getClf"><a class="viewcode-back" href="../optimize.html#optimize.BaseOptimizer.getClf">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">getClf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="BaseOptimizer.evaluateClf"><a class="viewcode-back" href="../optimize.html#optimize.BaseOptimizer.evaluateClf">[docs]</a>    <span class="k">def</span> <span class="nf">evaluateClf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to evaluate the individual, in this case the classifier</span>
+
+<span class="sd">        :param individual: individual for evaluation</span>
+<span class="sd">        :return: mean accuracy, standard deviation accuracy</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)):</span>
+            <span class="n">individual</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">correct</span><span class="p">(</span><span class="n">individual</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="n">mean</span><span class="p">,</span> <span class="n">std</span> <span class="o">=</span> <span class="n">KFoldAccuracy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getClf</span><span class="p">(</span><span class="n">individual</span><span class="p">))</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;Individual evaluation:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)):</span>
+            <span class="n">out</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">individual</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">out</span> <span class="o">+=</span> <span class="s2">&quot;  ----&gt; Accuracy: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; +- &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">std</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mean</span><span class="p">,</span></div>
+
+<div class="viewcode-block" id="BaseOptimizer.optimizeClf"><a class="viewcode-back" href="../optimize.html#optimize.BaseOptimizer.optimizeClf">[docs]</a>    <span class="k">def</span> <span class="nf">optimizeClf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">generations</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Searches through a genetic algorithm the best classifier</span>
+
+<span class="sd">        :param int population: Number of members of the first generation</span>
+<span class="sd">        :param int generations: Number of generations</span>
+<span class="sd">        :return: Trained classifier</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Optimizing accuracy:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Using deap, custom for decision tree</span>
+        <span class="n">creator</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;FitnessMax&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">.</span><span class="n">Fitness</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,))</span>
+        <span class="n">creator</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s2">&quot;Individual&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">fitness</span><span class="o">=</span><span class="n">creator</span><span class="o">.</span><span class="n">FitnessMax</span><span class="p">)</span>
+
+        <span class="c1"># Creation of individual and population</span>
+        <span class="n">toolbox</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">Toolbox</span><span class="p">()</span>
+        <span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;individual&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">initIndividual</span><span class="p">,</span> <span class="n">creator</span><span class="o">.</span><span class="n">Individual</span><span class="p">)</span>
+        <span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;population&quot;</span><span class="p">,</span> <span class="n">tools</span><span class="o">.</span><span class="n">initRepeat</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">toolbox</span><span class="o">.</span><span class="n">individual</span><span class="p">)</span>
+
+        <span class="c1"># Methods for genetic algorithm</span>
+        <span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;mate&quot;</span><span class="p">,</span> <span class="n">tools</span><span class="o">.</span><span class="n">cxTwoPoint</span><span class="p">)</span>
+        <span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;mutate&quot;</span><span class="p">,</span> <span class="n">tools</span><span class="o">.</span><span class="n">mutPolynomialBounded</span><span class="p">,</span> <span class="n">eta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">minValue</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">],</span>
+                         <span class="n">up</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">maxValue</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">],</span> <span class="n">indpb</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+        <span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;select&quot;</span><span class="p">,</span> <span class="n">tools</span><span class="o">.</span><span class="n">selTournament</span><span class="p">,</span> <span class="n">tournsize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">toolbox</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;evaluate&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluateClf</span><span class="p">)</span>
+
+        <span class="c1"># Tools</span>
+        <span class="n">pop</span> <span class="o">=</span> <span class="n">toolbox</span><span class="o">.</span><span class="n">population</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">population</span><span class="p">)</span>
+        <span class="n">hof</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">HallOfFame</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">Statistics</span><span class="p">(</span><span class="k">lambda</span>  <span class="n">ind</span><span class="p">:</span> <span class="n">ind</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">stats</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;avg&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span>
+        <span class="n">stats</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+        <span class="n">stats</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+
+        <span class="c1"># History</span>
+        <span class="n">hist</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">History</span><span class="p">()</span>
+        <span class="n">toolbox</span><span class="o">.</span><span class="n">decorate</span><span class="p">(</span><span class="s2">&quot;mate&quot;</span><span class="p">,</span> <span class="n">hist</span><span class="o">.</span><span class="n">decorator</span><span class="p">)</span>
+        <span class="n">toolbox</span><span class="o">.</span><span class="n">decorate</span><span class="p">(</span><span class="s2">&quot;mutate&quot;</span><span class="p">,</span> <span class="n">hist</span><span class="o">.</span><span class="n">decorator</span><span class="p">)</span>
+        <span class="n">hist</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+
+        <span class="n">fpop</span><span class="p">,</span> <span class="n">logbook</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">eaSimple</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span> <span class="n">toolbox</span><span class="p">,</span> <span class="n">cxpb</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">mutpb</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+                                            <span class="n">ngen</span><span class="o">=</span><span class="n">generations</span><span class="p">,</span> <span class="n">stats</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span>
+                                            <span class="n">halloffame</span><span class="o">=</span><span class="n">hof</span><span class="p">)</span>
+
+        <span class="n">best_score</span> <span class="o">=</span> <span class="n">hof</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">values</span><span class="p">[:]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best accuracy: &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">best_score</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Best classifier: &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getClf</span><span class="p">(</span><span class="n">hof</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotLogbook</span><span class="p">(</span><span class="n">logbook</span><span class="o">=</span><span class="n">logbook</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getClf</span><span class="p">(</span><span class="n">hof</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="BaseOptimizer.plotLogbook"><a class="viewcode-back" href="../optimize.html#optimize.BaseOptimizer.plotLogbook">[docs]</a>    <span class="k">def</span> <span class="nf">plotLogbook</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logbook</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Plots the given loogboook</span>
+
+<span class="sd">        :param logbook: logbook of the genetic algorithm</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">gen</span> <span class="o">=</span> <span class="n">logbook</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;gen&quot;</span><span class="p">)</span>
+        <span class="n">fit_max</span> <span class="o">=</span> <span class="n">logbook</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
+        <span class="n">fit_avg</span> <span class="o">=</span> <span class="n">logbook</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s2">&quot;avg&quot;</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="n">line1</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">fit_max</span><span class="p">,</span> <span class="s2">&quot;b-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Max fit&quot;</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Generation&quot;</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Fitness&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
+
+        <span class="n">line2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">gen</span><span class="p">,</span> <span class="n">fit_avg</span><span class="p">,</span> <span class="s2">&quot;r-&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Avg fit&quot;</span><span class="p">)</span>
+
+        <span class="n">lns</span> <span class="o">=</span> <span class="n">line1</span> <span class="o">+</span> <span class="n">line2</span>
+        <span class="n">labs</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lns</span><span class="p">]</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">lns</span><span class="p">,</span> <span class="n">labs</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;lower right&quot;</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="TreeOptimizer"><a class="viewcode-back" href="../optimize.html#optimize.TreeOptimizer">[docs]</a><span class="k">class</span> <span class="nc">TreeOptimizer</span><span class="p">(</span><span class="n">BaseOptimizer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Concrete optimizer for sklearn classifier -&gt; sklearn.tree.DecisionTreeClassifier</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TreeOptimizer.getClf"><a class="viewcode-back" href="../optimize.html#optimize.TreeOptimizer.getClf">[docs]</a>    <span class="k">def</span> <span class="nf">getClf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build a classifier object from an individual one</span>
+
+<span class="sd">        :param individual: individual to create classifier</span>
+<span class="sd">        :return: classifier sklearn.tree.DecisionTreeClassifier</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">clf</span> <span class="o">=</span> <span class="n">DecisionTreeClassifier</span><span class="p">(</span><span class="n">criterion</span><span class="o">=</span><span class="s2">&quot;gini&quot;</span><span class="p">,</span>
+                                     <span class="n">splitter</span><span class="o">=</span><span class="s2">&quot;best&quot;</span><span class="p">,</span>
+                                     <span class="n">max_features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">min_samples_split</span><span class="o">=</span><span class="n">individual</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                     <span class="n">min_samples_leaf</span><span class="o">=</span><span class="n">individual</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                     <span class="n">min_weight_fraction_leaf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                     <span class="n">max_leaf_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">min_impurity_split</span><span class="o">=</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">7</span><span class="p">,</span>
+                                     <span class="n">presort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">clf</span></div>
+
+<div class="viewcode-block" id="TreeOptimizer.getParams"><a class="viewcode-back" href="../optimize.html#optimize.TreeOptimizer.getParams">[docs]</a>    <span class="k">def</span> <span class="nf">getParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Params for the creation of individuals (relative to the algorithm)</span>
+<span class="sd">        These params define the name of the param, min value, max value, and type</span>
+
+<span class="sd">        :return: list of params</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># min_samples_split</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Param</span><span class="p">(</span><span class="s2">&quot;min_samples_split&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+        <span class="c1"># min_samples_leaf</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Param</span><span class="p">(</span><span class="s2">&quot;min_samples_leaf&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+        <span class="c1"># Return all the params</span>
+        <span class="k">return</span> <span class="n">params</span></div></div>
+
+
+<div class="viewcode-block" id="ForestOptimizer"><a class="viewcode-back" href="../optimize.html#optimize.ForestOptimizer">[docs]</a><span class="k">class</span> <span class="nc">ForestOptimizer</span><span class="p">(</span><span class="n">TreeOptimizer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Concrete optimizer for sklearn random forest -&gt; sklearn.ensemble.RandomForestClassifier</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ForestOptimizer.getClf"><a class="viewcode-back" href="../optimize.html#optimize.ForestOptimizer.getClf">[docs]</a>    <span class="k">def</span> <span class="nf">getClf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds a classifier object from an individual one</span>
+
+<span class="sd">        :param individual: individual to create classifier</span>
+<span class="sd">        :return: classifier sklearn.ensemble.RandomForestClassifier</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="n">individual</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                                     <span class="n">criterion</span><span class="o">=</span><span class="s2">&quot;gini&quot;</span><span class="p">,</span>
+                                     <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">min_samples_split</span><span class="o">=</span><span class="n">individual</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                     <span class="n">min_samples_leaf</span><span class="o">=</span><span class="n">individual</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                     <span class="n">min_weight_fraction_leaf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                     <span class="n">max_features</span><span class="o">=</span><span class="n">individual</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                                     <span class="n">max_leaf_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">min_impurity_split</span><span class="o">=</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">7</span><span class="p">,</span>
+                                     <span class="n">bootstrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                     <span class="n">oob_score</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                     <span class="n">n_jobs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                                     <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                     <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                     <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">class_weight</span><span class="o">=</span><span class="kc">None</span>
+                                     <span class="p">)</span>
+        <span class="k">return</span> <span class="n">clf</span></div>
+
+<div class="viewcode-block" id="ForestOptimizer.getParams"><a class="viewcode-back" href="../optimize.html#optimize.ForestOptimizer.getParams">[docs]</a>    <span class="k">def</span> <span class="nf">getParams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Params for the creation of individuals (relative to the algorithm)</span>
+<span class="sd">        These params define the name of the param, min value, max value, and type</span>
+
+<span class="sd">        :return: list of params</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">ForestOptimizer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">getParams</span><span class="p">()</span>
+        <span class="c1"># max_features</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Param</span><span class="p">(</span><span class="s2">&quot;max_features&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
+        <span class="c1"># n_estimator</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Param</span><span class="p">(</span><span class="s2">&quot;n_estimators&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="nb">int</span><span class="p">))</span>
+        <span class="c1"># Return all the params</span>
+        <span class="k">return</span> <span class="n">params</span></div></div>
+
+
+<div class="viewcode-block" id="ExtraTreesOptimizer"><a class="viewcode-back" href="../optimize.html#optimize.ExtraTreesOptimizer">[docs]</a><span class="k">class</span> <span class="nc">ExtraTreesOptimizer</span><span class="p">(</span><span class="n">ForestOptimizer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Concrete optimizer for sklearn extra trees -&gt; sklearn.ensemble.ExtraTreesClassifier</span>
+<span class="sd">    Use the same getParams() as ForestOptimizer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ExtraTreesOptimizer.getClf"><a class="viewcode-back" href="../optimize.html#optimize.ExtraTreesOptimizer.getClf">[docs]</a>    <span class="k">def</span> <span class="nf">getClf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds a classifier object from an individual one</span>
+
+<span class="sd">        :param individual: individual to create a classifier</span>
+<span class="sd">        :return: classifier ExtraTreesClassifier</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clf</span> <span class="o">=</span> <span class="n">ExtraTreesClassifier</span><span class="p">(</span><span class="n">n_estimators</span><span class="o">=</span><span class="n">individual</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+                                   <span class="n">criterion</span><span class="o">=</span><span class="s2">&quot;gini&quot;</span><span class="p">,</span>
+                                   <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">min_samples_split</span><span class="o">=</span><span class="n">individual</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                   <span class="n">min_samples_leaf</span><span class="o">=</span><span class="n">individual</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                   <span class="n">min_weight_fraction_leaf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                   <span class="n">max_features</span><span class="o">=</span><span class="n">individual</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                                   <span class="n">max_leaf_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">min_impurity_split</span><span class="o">=</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">7</span><span class="p">,</span>
+                                   <span class="n">bootstrap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                   <span class="n">oob_score</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                   <span class="n">n_jobs</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                                   <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                   <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                   <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                   <span class="n">class_weight</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">clf</span></div></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Antonio Caparrini Laura Pérez.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
