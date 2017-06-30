@@ -1,6 +1,6 @@
 from sklearn.model_selection import StratifiedKFold
 from sklearn import tree
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, GradientBoostingClassifier
 from sklearn.metrics import confusion_matrix
 from tools import ConfusionMatrixUtils
 import pydotplus
@@ -49,6 +49,23 @@ def bestClfs():
             min_samples_leaf=2, min_samples_split=15,
             min_weight_fraction_leaf=0, n_estimators=84, n_jobs=4,
             oob_score=True, random_state=None, verbose=0, warm_start=False)
+
+    ET7 = ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+           max_depth=None, max_features=0.790926623187,
+           max_leaf_nodes=None, min_impurity_split=1e-07,
+           min_samples_leaf=1, min_samples_split=16,
+           min_weight_fraction_leaf=0, n_estimators=135, n_jobs=4,
+           oob_score=False, random_state=None, verbose=0, warm_start=False)
+
+    GB7 = GradientBoostingClassifier(criterion='friedman_mse', init=None,
+              learning_rate=0.0150834277809, loss='deviance',
+              max_depth=None, max_features=0.982060609531,
+              max_leaf_nodes=None, min_impurity_split=1e-07,
+              min_samples_leaf=22, min_samples_split=51,
+              min_weight_fraction_leaf=0, n_estimators=135, presort='auto',
+              random_state=None, subsample=0.769360696352, verbose=0,
+              warm_start=False)
+
     #1 0.548 +-0.015 with beatsdataset.csv (windows and steps 1 1 0.05 0.05) SIN ESSENTIA BPM 0.47
     #2 0.492 +- 0.015 with beatsdataset1-1-01-005.csv
     #3 0.486 +- 0.015 with beatsdataset1-1-01-01.csv
@@ -87,7 +104,7 @@ def bestClfs():
 
     #XGB = XGBClassifier(learning_rate=0.1, max_depth=5,min_child_weight=6, nthread=4,subsample=0.55)
 
-    clfs = [DTC23, RFC23, DTC7, RFC7]
+    clfs = [DTC23, RFC23, DTC7, RFC7, ET7, GB7]
     return clfs
 
 def plot_confusion_matrix(cm, classes,
