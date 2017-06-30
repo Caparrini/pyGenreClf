@@ -2,7 +2,7 @@ import numpy as np
 from classifier import KFoldAccuracy
 from random import random, randint
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, GradientBoostingClassifier
 from abc import ABCMeta, abstractmethod
 import matplotlib.pyplot as plt
 from deap import base, creator, tools, algorithms
@@ -293,4 +293,48 @@ class ExtraTreesOptimizer(ForestOptimizer):
                                    verbose=0,
                                    warm_start=False,
                                    class_weight=None)
+        return clf
+
+
+class GradientBoostingOptimizer(ForestOptimizer):
+    '''
+    Concrete optimizer for sklearn gradient boosting -> sklearn.ensemble.GradientBoostingClassifier
+    Use the same getParams() as ForestOptimizer
+    '''
+    def getParams(self):
+        """
+        Params for the creation of individuals (relative to the algorithm)
+        These params define the name of the param, min value, max value, and type
+
+        :return: list of params
+        """
+        params = super(GradientBoostingOptimizer, self).getParams()
+        # learning_rate
+        params.append(Param("learning_rate", 0, 1, float))
+        # subsample
+        params.append(Param("subsample", 0, 1, float))
+        # Return all the params
+        return params
+
+    def getClf(self, individual):
+        """
+        Builds a classifier object from an individual one
+
+        :param individual: individual to create a classifier
+        :return: classifier ExtraTreesClassifier
+        """
+        clf = GradientBoostingClassifier(n_estimators=individual[3],
+                                         criterion="friedman_mse",
+                                         max_depth=None,
+                                         min_samples_split=individual[0],
+                                         min_samples_leaf=individual[1],
+                                         min_weight_fraction_leaf=0,
+                                         max_features=individual[2],
+                                         max_leaf_nodes=None,
+                                         min_impurity_split=1e-7,
+                                         random_state=None,
+                                         verbose=0,
+                                         warm_start=False,
+                                         learning_rate=individual[4],
+                                         subsample=individual[5])
         return clf
