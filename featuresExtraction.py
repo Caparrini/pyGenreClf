@@ -105,7 +105,7 @@ def pyAudioFeatures(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/Users/C
         if(not query_yes_no("Do you want to overwrite it?")):
             return
 
-    dirs = [dataset_folder + f + "/" for f in genre_list]   # The class folder full address
+    dirs = [os.path.join(dataset_folder,f) for f in genre_list]   # The class folder full address
     [featuresTotal, labelsTotal, _] = audioFeatureExtraction.dirsWavFeatureExtraction(dirs, mtWin, mtStep, stWin, stStep, True) # Using pyAudioAnalysis library
 
     features = [] # Features list
