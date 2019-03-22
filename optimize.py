@@ -1,11 +1,12 @@
 import numpy as np
 from classifier import KFoldAccuracy
-from random import random, randint
+from random import random, randint, uniform
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, GradientBoostingClassifier
 from abc import ABCMeta, abstractmethod
 import matplotlib.pyplot as plt
 from deap import base, creator, tools, algorithms
+import pathos.multiprocessing as multiprocessing
 
 
 class Param(object):
@@ -51,7 +52,7 @@ class BaseOptimizer(object):
     """
     __metaclass__ = ABCMeta
 
-    def __init__(self, df):
+    def __init__(self, df, log_file):
         """
 
         :param df: (DataFrame) DataFrame to train and test the classifier 
@@ -59,6 +60,9 @@ class BaseOptimizer(object):
         """
         self.df = df
         self.params = self.getParams()
+        self.eval_dict = {}
+        self.file_out = open(log_file, "w")
+
 
     def initIndividual(self, pcls):
         """
@@ -72,7 +76,7 @@ class BaseOptimizer(object):
             if p.type == int:
                 ps.append(randint(p.minValue, p.maxValue))
             else:
-                ps.append(random())
+                ps.append(round(uniform(p.minValue, p.maxValue), 3))
         ind = pcls(ps)
         return ind
 
@@ -93,13 +97,20 @@ class BaseOptimizer(object):
         """
         for i in range(len(self.params)):
             individual[i] = self.params[i].correct(individual[i])
-
-        mean, std = KFoldAccuracy(self.df, self.getClf(individual))
+        if tuple(individual) in self.eval_dict:
+            self.file_out.write("Individual has been evaluated before\n")
+            meanstd = self.eval_dict[tuple(individual)]
+            mean = meanstd[0]
+            std = meanstd[1]
+        else:
+            self.file_out.write("Individual has NOT been evaluated before\n")
+            mean, std = KFoldAccuracy(self.df, self.getClf(individual))
+            self.eval_dict[tuple(individual)] = tuple((mean,std))
         out = "Individual evaluation:\n"
         for i in range(len(self.params)):
             out += self.params[i].name + " = " + str(individual[i]) + "\n"
         out += "  ----> Accuracy: " + str(mean) + " +- " + str(std) + "\n"
-        print(out)
+        self.file_out.write(out)
         return mean,
 
     def optimizeClf(self, population=10, generations=3):
@@ -110,13 +121,19 @@ class BaseOptimizer(object):
         :param int generations: Number of generations
         :return: Trained classifier
         '''
-        print("Optimizing accuracy:\n")
+        #self.eval_dict = {}
+        self.file_out.write("Optimizing accuracy:\n")
         # Using deap, custom for decision tree
         creator.create("FitnessMax", base.Fitness, weights=(1.0,))
         creator.create("Individual", list, fitness=creator.FitnessMax)
 
         # Creation of individual and population
         toolbox = base.Toolbox()
+
+        # Paralel
+        pool = multiprocessing.Pool()
+        toolbox.register("map", pool.map)
+
         toolbox.register("individual", self.initIndividual, creator.Individual)
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
@@ -147,8 +164,9 @@ class BaseOptimizer(object):
 
         best_score = hof[0].fitness.values[:]
 
-        print("Best accuracy: "+str(best_score[0]))
-        print("Best classifier: "+str(self.getClf(hof[0])))
+        self.file_out.write("LOGBOOK: \n"+str(logbook)+"\n")
+        self.file_out.write("Best accuracy: "+str(best_score[0])+"\n")
+        self.file_out.write("Best classifier: "+str(self.getClf(hof[0])))
 
         self.plotLogbook(logbook=logbook)
         return self.getClf(hof[0])
@@ -175,7 +193,7 @@ class BaseOptimizer(object):
         labs = [l.get_label() for l in lns]
         ax1.legend(lns, labs, loc="lower right")
 
-        plt.show()
+        plt.savefig("optfig")
 
 
 class TreeOptimizer(BaseOptimizer):
@@ -199,7 +217,6 @@ class TreeOptimizer(BaseOptimizer):
                                      min_weight_fraction_leaf=0,
                                      max_leaf_nodes=None,
                                      random_state=None,
-                                     min_impurity_split=1e-7,
                                      presort=False)
         return clf
 
@@ -238,10 +255,9 @@ class ForestOptimizer(TreeOptimizer):
                                      min_weight_fraction_leaf=0,
                                      max_features=individual[2],
                                      max_leaf_nodes=None,
-                                     min_impurity_split=1e-7,
                                      bootstrap=True,
                                      oob_score=True,
-                                     n_jobs=4,
+                                     n_jobs=-1,
                                      random_state=None,
                                      verbose=0,
                                      warm_start=False,
@@ -260,7 +276,7 @@ class ForestOptimizer(TreeOptimizer):
         # max_features
         params.append(Param("max_features", 0, 1, float))
         # n_estimator
-        params.append(Param("n_estimators", 10, 150, int))
+        params.append(Param("n_estimators", 100, 350, int))
         # Return all the params
         return params
 
@@ -285,10 +301,9 @@ class ExtraTreesOptimizer(ForestOptimizer):
                                    min_weight_fraction_leaf=0,
                                    max_features=individual[2],
                                    max_leaf_nodes=None,
-                                   min_impurity_split=1e-7,
                                    bootstrap=False,
                                    oob_score=False,
-                                   n_jobs=4,
+                                   n_jobs=-1,
                                    random_state=None,
                                    verbose=0,
                                    warm_start=False,
@@ -310,7 +325,7 @@ class GradientBoostingOptimizer(ForestOptimizer):
         """
         params = super(GradientBoostingOptimizer, self).getParams()
         # learning_rate
-        params.append(Param("learning_rate", 0, 1, float))
+        params.append(Param("learning_rate", 0.00001, 0.1, float))
         # subsample
         params.append(Param("subsample", 0, 1, float))
         # Return all the params
@@ -331,7 +346,6 @@ class GradientBoostingOptimizer(ForestOptimizer):
                                          min_weight_fraction_leaf=0,
                                          max_features=individual[2],
                                          max_leaf_nodes=None,
-                                         min_impurity_split=1e-7,
                                          random_state=None,
                                          verbose=0,
                                          warm_start=False,
