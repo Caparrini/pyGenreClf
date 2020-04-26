@@ -10,8 +10,8 @@ import time
 from librosa.beat import beat_track
 import librosa
 try:
-    import essentia.standard
-    from essentia.standard import *
+    import essentia
+    import essentia.standard as es
 except ImportError:
     print("Essentia not installed!")
 
@@ -222,7 +222,7 @@ def extractFeatures(Fs, x, mtWin, mtStep, stWin, stStep):
     '''
     t1 = time.clock()
 
-    [MidTermFeatures, stFeatures] = audioFeatureExtraction.mtFeatureExtraction(x, Fs, round(mtWin*Fs), round(mtStep*Fs), round(Fs*stWin), round(Fs * stStep))
+    [MidTermFeatures, stFeatures, _] = audioFeatureExtraction.mtFeatureExtraction(x, Fs, round(mtWin*Fs), round(mtStep*Fs), round(Fs*stWin), round(Fs * stStep))
     [beat, beatConf] = audioFeatureExtraction.beatExtraction(stFeatures, stStep)
 
     MidTermFeatures = np.transpose(MidTermFeatures)
@@ -230,7 +230,7 @@ def extractFeatures(Fs, x, mtWin, mtStep, stWin, stStep):
 
     MidTermFeatures = np.append(MidTermFeatures, beat)
     MidTermFeatures = np.append(MidTermFeatures, beatConf)
-    MidTermFeatures = np.append(MidTermFeatures, extractBPM(x))
+    #MidTermFeatures = np.append(MidTermFeatures, extractBPM(x))
 
     t2 = time.clock()
     print("Processing time : " + str(t2-t1))
@@ -276,3 +276,140 @@ def extractFeaturesFolder(dataset_csv="CSV/beatsdataset.csv", dataset_folder="/U
     pd.DataFrame.to_csv(df,dataset_csv) # Export the DataFrame to a .csv file for easy import later
     return df
 
+def file_extract_essentia(audio_file):
+    rhythm_feats = ["rhythm.bpm",
+                    "rhythm.bpm_histogram_first_peak_bpm",
+                    "rhythm.bpm_histogram_first_peak_weight",
+                    "rhythm.bpm_histogram_second_peak_bpm",
+                    "rhythm.bpm_histogram_second_peak_spread",
+                    "rhythm.bpm_histogram_second_peak_weight",
+                    "rhythm.danceability",
+                    "rhythm.beats_loudness.mean",
+                    "rhythm.beats_loudness.stdev",
+                    "rhythm.onset_rate",
+                    "rhythm.beats_loudness_band_ratio.mean",
+                    "rhythm.beats_loudness_band_ratio.stdev"
+                    ]
+
+    features_total, features_frames = es.MusicExtractor(endTime=120)(audio_file)
+
+    features = []
+    for i in range(0,len(rhythm_feats)-2):
+        features.append(features_total[rhythm_feats[i]])
+
+    for i in range(len(rhythm_feats)-2,len(rhythm_feats)):
+        bands = features_total[rhythm_feats[i]]
+        for j in range(0,len(bands)):
+            features.append(bands[j])
+
+    x, Fs = librosa.load(audio_file)
+    x = librosa.resample(x, Fs, 22050)
+    x = librosa.to_mono(x)
+    max_len = 22050*120
+    if(len(x)>max_len):
+        x = x[:max_len]
+    py_feats = extractFeatures(22050, x, 1, 1, 0.05, 0.05)
+
+    py_feats = list(np.append(py_feats, np.array(features)))
+
+
+    return py_feats
+
+def essentia_from_folder(dataset_csv="beatsdataset_essentia.csv", dataset_folder="/Users/Capa/Datasets/beatsdataset/"):
+    if(not os.path.exists(dataset_folder)): # Error if the folder given does not exist
+        print("The dataset folder : " + dataset_folder + " does not exist.\n")
+        return
+
+    if(os.path.exists(dataset_csv)):    # If the .csv file exist, ask if the user wants to overwrite it
+
+        print("The dataset_csv file already exists.\n")
+        if(not query_yes_no("Do you want to overwrite it?")):
+            return
+    features = dirs_extract_essentia(dataset_folder)
+
+    df = pd.DataFrame.from_records(features)  # Generate DataFrame with the features
+
+    features_names_essentia = ["bpm",
+                    "bpm_histogram_first_peak_bpm",
+                    "bpm_histogram_first_peak_weight",
+                    "bpm_histogram_second_peak_bpm",
+                    "bpm_histogram_second_peak_spread",
+                    "bpm_histogram_second_peak_weight",
+                    "danceability",
+                    "beats_loudness.mean",
+                    "beats_loudness.stdev",
+                    "onset_rate",
+                    "beats_loudness_band_ratio.mean1","beats_loudness_band_ratio.mean2",
+                    "beats_loudness_band_ratio.mean3","beats_loudness_band_ratio.mean4",
+                    "beats_loudness_band_ratio.mean5","beats_loudness_band_ratio.mean6",
+                    "beats_loudness_band_ratio.stdev1","beats_loudness_band_ratio.stdev2",
+                    "beats_loudness_band_ratio.stdev3","beats_loudness_band_ratio.stdev4",
+                    "beats_loudness_band_ratio.stdev5","beats_loudness_band_ratio.stdev6",
+                    "class","id"
+                    ]
+
+    features_names = ["ZCR", "Energy", "EnergyEntropy", "SpectralCentroid",
+                      "SpectralSpread", "SpectralEntropy", "SpectralFlux",
+                      "SpectralRolloff", "MFCCs", "ChromaVector", "ChromaDeviation"]
+
+    features_names_full = []
+
+    features_metrics = ["m", "std"]
+
+    for j in range(len(features_metrics)):  # Generate the names for the features
+        offset = j * 34
+        for i in range(1, 9):
+            features_names_full.append(str(i + offset) + "-" + features_names[i - 1] + features_metrics[j])
+        for i in range(9, 22):
+            features_names_full.append(str(i + offset) + "-" + features_names[8] + str(i - 8) + features_metrics[j])
+        for i in range(22, 34):
+            features_names_full.append(str(i + offset) + "-" + features_names[9] + str(i - 21) + features_metrics[j])
+        features_names_full.append(str(34 + offset) + "-" + features_names[10] + features_metrics[j])
+    features_names_full.append(str(len(features_metrics) * 34 + 1) + "-BPM")
+    features_names_full.append(str(len(features_metrics) * 34 + 2) + "-BPMconf")
+
+    features_names_full.extend(features_names_essentia)
+
+
+    df.columns = features_names_full  # Added the features names to the DataFrame object
+
+    pd.DataFrame.to_csv(df, dataset_csv)  # Export the DataFrame to a .csv file for easy import later
+
+    return df  # And return the DataFrame
+
+
+def dirs_extract_essentia(dataset_folder):
+    '''
+    Folder with sub-folder to extract all the essentia features
+
+    :param str dataset_folder: Folder with folder of audio files
+    :return list: List ob features of all the songs in the sub-folders
+    '''
+    features = [] # features
+    genre_list = [x for x in os.walk(dataset_folder)][0][1]
+    dirs = [os.path.join(dataset_folder,f) for f in genre_list]
+    for d in dirs:
+        features.extend(dir_extract_essentia(d))
+
+    return features
+
+def dir_extract_essentia(folder):
+    '''
+    Generate a list of essentia features of each song in the given folder
+
+    :param str folder: Folder with audio files to extract features
+    :return list: List of features of every song in the folder
+    '''
+    features = []
+
+    types = ('*.wav', '*.aif', '*.mp3', '*.au', '*.aiff', '*.flac')
+    audioFiles = []
+    genre = os.path.basename(folder)
+    for files in types:
+        audioFiles.extend(glob.glob(os.path.join(folder, files)))
+    for audioFile in audioFiles:
+        feats = file_extract_essentia(audioFile)
+        feats.append(genre)
+        feats.append(os.path.basename(audioFile))
+        features.append(feats)
+    return features

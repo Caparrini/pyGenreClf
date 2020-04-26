@@ -10,6 +10,7 @@ import itertools
 import os
 import joblib
 import librosa
+import logging
 from featuresExtraction import extractFeatures
 try:
     from xgboost import XGBClassifier
@@ -120,12 +121,13 @@ def plot_confusion_matrix(cm, classes,
     :param str title: Title of the plot
     :param cmap: Colours
     '''
+    classes = sorted(classes)
     plt.imshow(cm, interpolation='nearest', cmap=cmap, vmax=sum(cm[0][:]))
     plt.title(title)
     plt.colorbar()
     tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=90)
-    plt.yticks(tick_marks, classes)
+    plt.xticks(tick_marks, classes, rotation=90, fontsize=12)
+    plt.yticks(tick_marks, classes, fontsize=12)
 
     if normalize:
         cm = np.round(100*cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]).astype('int')
@@ -139,13 +141,15 @@ def plot_confusion_matrix(cm, classes,
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
         plt.text(j, i, cm[i, j],
                  horizontalalignment="center",
-                 color="white" if cm[i, j] > thresh else "black")
+                 verticalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black",
+                 fontsize=16)
 
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
-def KFoldCrossValidation(df, report_folder, clf):
+def KFoldCrossValidation(df, report_folder, clf, random_state=None):
     '''
     Generates a report using KFold cross validation.
     It generate train/test confusion matrix for each kfold, a final kfold with all the test splits
@@ -160,7 +164,7 @@ def KFoldCrossValidation(df, report_folder, clf):
     class_list, features, labels = unpackDF(df)
 
     # Create object to split the dataset (in 5 at random but preserving percentage of each class)
-    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=1)
+    skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=random_state)
     # Split the dataset. The skf saves splits index
     skf.get_n_splits(features, labels)
 
@@ -179,7 +183,20 @@ def KFoldCrossValidation(df, report_folder, clf):
     kcounter = 0
 
     # Report file with useful information
+    if (os.path.isdir(report_folder)):
+
+        logging.warning("The directory %s already exist", report_folder)
+
+    else:
+
+        logging.info("Creating directory %s", report_folder)
+
+        os.mkdir(report_folder, 0o0755)
+
+
     report = open(os.path.join(report_folder,"report.txt"), "w")
+
+    codes = []
 
     # Iterate over the KFolds and do stuff
     for train_index, test_index in skf.split(features, labels):
@@ -198,6 +215,7 @@ def KFoldCrossValidation(df, report_folder, clf):
 
         labels_kfold.extend(labels_test)
         labels_kfold_predicted.extend(labels_pred_test)
+        codes.extend(features_test[:,71])
 
         kcounter += 1
 
@@ -226,11 +244,14 @@ def KFoldCrossValidation(df, report_folder, clf):
     cmm = ConfusionMatrixUtils(cm_kfold_total, class_list)
     report.write(cmm.report() + "\n\n")
 
+    joblib.dump(cmm,os.path.join(report_folder,"cmm"))
+    joblib.dump(cmm.cmmToGraph(),os.path.join(report_folder,"cmgraph"))
+
     clf.fit(features, labels)
 
-    return clf
+    return clf, labels_kfold_predicted, codes
 
-def TreeKFoldReport(df, report_folder, clf, n_splits=5, random_state=1):
+def TreeKFoldReport(df, report_folder, clf, n_splits=10, random_state=None):
     '''
     Uses KFold cross validation over the dataset generating info in the report folder.
 
@@ -369,11 +390,12 @@ def plot_feature_importances(tree_classifier, feat_names, nfeat=10,  dimy=6, dim
     fig_size = plt.rcParams["figure.figsize"]
     fig_size[0] = dimx
     fig_size[1] = dimy
+    plt.rc('ytick', labelsize=16)
     plt.rcParams["figure.figsize"] = fig_size
     plt.title("Feature importances")
     plt.bar(range(nfeat), importances[indices],
             color="b", yerr=std[indices], align="center")
-    plt.xticks(range(nfeat), feat_names[indices], rotation=45)
+    plt.xticks(range(nfeat), feat_names[indices], rotation=75, fontsize=12)
     plt.xlim([-1, nfeat])
     plt.show()
 
@@ -399,7 +421,7 @@ def unpackDF(df):
 
     return class_list, features, labels
 
-def KFoldAccuracy(df, clf, n_splits=5, random_state=1):
+def KFoldAccuracy(df, clf, n_splits=10, random_state=None):
     '''
     Computes KFold cross validation accuracy using n_splits folds over the data in the pandas.DataFrame given.
     Uses an stratified KFold with the random_state specified.
